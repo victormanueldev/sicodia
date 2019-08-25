@@ -4,7 +4,7 @@
 export interface Client {
     id                  : string;   // Nro. Cédula
     fullName            : string;   // Nombre completo
-    phone               : string;   // Telefonos fijo 
+    phone?              : string;   // Telefonos fijo 
     mobile              : string;   // Celular
     bussinessType       : string;   // Tipo de negocio
     address             : string;   // Direccion del cliente

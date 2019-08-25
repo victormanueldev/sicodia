@@ -4,6 +4,7 @@
 export interface Credit {
     id?                 : string;   // ID Autmatico
     totalAmount         : number;   // Monto total del crédito
+    feesTotalAmount     : number;   // Valor total de la cuota
     numberFees          : number;   // Numero total de cutoas
     profitPercentage    : number;   // Porcentaje de Ganancia
     billingFrequency    : string;   // Frecuencia de cobro
