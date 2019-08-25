@@ -1,5 +1,7 @@
 {
   "name": "sicodia",
-  "integrations": {},
+  "integrations": {
+    "cordova": {}
+  },
   "type": "angular"
 }
