@@ -23,6 +23,11 @@ export class AppComponent {
       url: '/clients',
       icon: 'person'
     },
+    {
+      title: 'Recaudos',
+      url: '/collections',
+      icon: 'cash'
+    }
 
   ];
 

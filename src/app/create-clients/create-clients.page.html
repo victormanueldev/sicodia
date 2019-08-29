@@ -1,0 +1,83 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-back-button></ion-back-button>
+        </ion-buttons>
+        <ion-title>Crear Cliente</ion-title>
+      </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form [formGroup]="mainForm">
+
+    <div formGroupName="client">
+      <ion-item>
+        <ion-label position="floating">Número de cédula</ion-label>
+        <ion-input formControlName="id" name="id" type="number"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="floating">Nombre completo</ion-label>
+        <ion-input formControlName="fullName" name="fullName"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="floating">Teléfono fijo</ion-label>
+        <ion-input formControlName="phone" name="phone" type="number"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="floating">Celular</ion-label>
+        <ion-input formControlName="mobile" name="mobile" type="number"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="floating">Tipo de negocio</ion-label>
+        <ion-input formControlName="bussinessType" name="bussinessType"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="floating">Dirección</ion-label>
+        <ion-input formControlName="address" name="address"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="floating">Barrio</ion-label>
+        <ion-input formControlName="neighborhood" name="neighborhood"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="floating">Ciudad</ion-label>
+        <ion-input formControlName="city" name="city"></ion-input>
+      </ion-item>
+    </div>
+
+    <div formGroupName="credit">
+      <ion-item>
+        <ion-label position="floating">Valor del crédito</ion-label>
+        <ion-input formControlName="totalAmount" name="totalAmount" type="number"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="floating">Nro. de cuotas</ion-label>
+        <ion-input formControlName="numberFees" name="numberFees" type="number"></ion-input>
+      </ion-item>
+
+      <ion-item>
+          <ion-label position="floating">Valor de la cuota</ion-label>
+          <ion-input formControlName="feesTotalAmount" name="feesTotalAmount" type="number"></ion-input>
+        </ion-item>
+  
+      <ion-item>
+        <ion-label position="floating">Frecuencia de cobros</ion-label>
+        <ion-select placeholder="Selecciona una opción" formControlName="billingFrequency" name="billingFrequency">
+          <ion-select-option value="daily" selected>Diario</ion-select-option>
+          <ion-select-option value="weekly">Semanal</ion-select-option>
+          <ion-select-option value="monthly">Mensual</ion-select-option>
+        </ion-select>
+      </ion-item>
+    </div>
+
+    <ion-button expand="block" (click)="createClient()" [disabled]="!mainForm.valid">Guardar</ion-button>
+  </form>
+</ion-content>

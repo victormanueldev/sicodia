@@ -14,11 +14,17 @@ export class ClientsService {
   private clients: Observable<Client[]>;
 
   constructor(
-    private afFirestre: AngularFirestore
+    private afs: AngularFirestore
   ) { 
 
     // Crea una instancia de la coleccion con un objeto de AngularFire.
-    this.clientsCollection = this.afFirestre.collection<Client>('clientes');
+    this.clientsCollection = this.afs.collection<Client>('clientes');
+  }
+
+  /**
+   * Obtiene todos los clientes de la coleccion.
+   */
+  getClients(): Observable<Client[]>{
 
     // Obtiene el estado actual de la coleccion seleccionada
     // como un Observable Doc. completa en:
@@ -31,13 +37,8 @@ export class ClientsService {
           return {id, ...data};
         })
       })
-    )
-  }
-
-  /**
-   * Obtiene todos los clientes de la coleccion.
-   */
-  getClients(): Observable<Client[]>{
+    );
+    
     return this.clients;
   }
 
@@ -54,7 +55,7 @@ export class ClientsService {
    * @param client 
    */
   addClient(client: Client): Promise<void>{
-    return this.clientsCollection.doc('clientes').set(client);
+    return this.clientsCollection.doc<Client>(client.id.toString()).set(client);
   }
 
   /**

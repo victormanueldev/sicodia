@@ -16,16 +16,15 @@ export class AuthService {
   user$: Observable<User>;
 
   constructor(
-    private afAuth : AngularFireAuth,
-    private afFirestore : AngularFirestore
+    private afAuth: AngularFireAuth,
+    private afs: AngularFirestore
   ) {
-    
     // Escucha al cambio de estado de autenticacion del usuario
     this.user$ = this.afAuth.authState.pipe(
       switchMap(user => {
-        if(user){
+        if (user) {
           // Retorna un objeto la base de datos del tipo <User>
-          return this.afFirestore.doc<User>(`user/${user.uid}`).valueChanges();
+          return this.afs.doc<User>(`user/${user.uid}`).valueChanges();
         } else {
           // Retorna un observable de null cuando no hay cambios de estado el usuario
           return of(null);
@@ -39,14 +38,14 @@ export class AuthService {
    * @param email 
    * @param password 
    */
-  login(email: string, password: string): Promise<any>{
+  login(email: string, password: string): Promise<any> {
     return this.afAuth.auth.signInWithEmailAndPassword(email, password)
   }
 
   /**
    * Cerrar sesión en Firebase
    */
-  logout(): Promise<void>{
+  logout(): Promise<void> {
     console.log("Logout")
     return this.afAuth.auth.signOut();
   }

@@ -11,6 +11,7 @@ import { Router } from '@angular/router';
 })
 export class LoginPage implements OnInit {
 
+
   //Formulario Login
   loginForm = new FormGroup({
     email: new FormControl('', Validators.email),
@@ -46,7 +47,9 @@ export class LoginPage implements OnInit {
     loader.present();
 
     try {
-      await this.authService.login(this.loginForm.value.email, this.loginForm.value.password);
+      const res = await this.authService.login(this.loginForm.value.email, this.loginForm.value.password);
+      localStorage.setItem("uid", res.user.uid)
+      
       this.router.navigate(['/home']);
     } catch (error) {
       // Valida el tipo de error

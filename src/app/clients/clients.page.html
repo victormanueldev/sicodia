@@ -1,51 +1,31 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-title>Clientes</ion-title>
-  </ion-toolbar>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-back-button defaultHref="home"></ion-back-button>
+        </ion-buttons>
+        <ion-title>Clientes</ion-title>
+      </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <form [formGroup]="clientsForm">
+  <ion-card>
     <ion-item>
-      <ion-label position="floating" >Número de cédula</ion-label>
-      <ion-input formControlName="id" name="id"></ion-input>
+      <ion-icon name="person-add" slot="start"></ion-icon>
+      <ion-label>Crea un nuevo cliente</ion-label>
+      <ion-button fill="outline" slot="end" (click)="toCreate()">Crear</ion-button>
     </ion-item>
+  </ion-card>
+    <!-- Searchbar with cancel button shown on focus -->
+    <ion-searchbar placeholder="Buscar por cédula..." showCancelButton="focus" (ionInput)="filterClients($event.target.value)"></ion-searchbar>
+  <ion-list>
+    <ion-item detail="true" *ngFor="let client of clients" (click)="toDetails(client.id)">
+        <ion-label text-wrap>
+            <ion-text>
+              <h3>{{ client.fullName}}</h3>
+            </ion-text>
+            <p><b>C.C. </b>{{ client.id }}</p>
+          </ion-label>
+    </ion-item>
+  </ion-list>
 
-    <ion-item>
-      <ion-label position="floating" >Nombre completo</ion-label>
-      <ion-input formControlName="fullName" name="fullName"></ion-input>
-    </ion-item>
-
-    <ion-item>
-      <ion-label position="floating" >Teléfono fijo</ion-label>
-      <ion-input formControlName="phone" name="phone"></ion-input>
-    </ion-item>
-
-    <ion-item>
-      <ion-label position="floating" >Celular</ion-label>
-      <ion-input formControlName="mobile" name="mobile"></ion-input>
-    </ion-item>
-
-    <ion-item>
-      <ion-label position="floating" >Tipo de negocio</ion-label>
-      <ion-input formControlName="bussinessType" name="bussinessType"></ion-input>
-    </ion-item>
-
-    <ion-item>
-      <ion-label position="floating" >Dirección</ion-label>
-      <ion-input formControlName="address" name="address"></ion-input>
-    </ion-item>
-
-    <ion-item>
-      <ion-label position="floating" >Barrio</ion-label>
-      <ion-input formControlName="neighborhood" name="neighborhood"></ion-input>
-    </ion-item>
-
-    <ion-item>
-      <ion-label position="floating" >Ciudad</ion-label>
-      <ion-input formControlName="city" name="city"></ion-input>
-    </ion-item>
-    
-    <ion-button expand="block" (click)="login()" [disabled]="!loginForm.valid">Guardar</ion-button>
-  </form>
 </ion-content>
