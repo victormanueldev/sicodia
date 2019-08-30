@@ -22,7 +22,7 @@
                   </ion-text>
                   <p><b>C.C. </b>{{ client.id }}</p>
                 </ion-label>
-              <ion-button fill="outline" slot="end" (click)="collect(client.id)">Cobrar</ion-button>
+              <ion-button fill="outline" slot="end" (click)="collect(client.id, client.fullName)">Cobrar</ion-button>
             </ion-item>
           </ion-card>
     </ion-list>

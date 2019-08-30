@@ -40,7 +40,7 @@ export class CreditsService {
   }
 
   getCreditByClient(idClient: string): Observable<Credit[]>{
-    return this.afs.collection<Credit>('creditos', ref => ref.where('idClient', '==', idClient) ).valueChanges();
+    return this.afs.collection<Credit>('creditos', ref => ref.where('idClient', '==', parseInt(idClient)) ).valueChanges();
   }
 
   addCredit(data: Credit): Promise<void> {

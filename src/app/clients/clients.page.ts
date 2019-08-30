@@ -23,11 +23,8 @@ export class ClientsPage implements OnInit {
     this.clientsService.getClients().subscribe(res => {
       this.clients = res;
       this.filteredClients = this.clients;
-      console.log(this.clients);
       
     });
-
-
 
   }
   toCreate() {

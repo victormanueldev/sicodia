@@ -50,7 +50,7 @@ export class CollectionsPage implements OnInit {
     const loader = await this.utilsService.presentLoader('Obteniendo datos...');
     loader.present();
 
-    const prom = this.creditsServices.getCreditByClient(idClient).subscribe(res => {
+    const promise = this.creditsServices.getCreditByClient(idClient).subscribe(res => {
       try {
 
         if (res.length === 0) {
@@ -76,10 +76,15 @@ export class CollectionsPage implements OnInit {
         );
 
       } catch (error) {
-        console.log("Ha ocurrido un error...");
+        this.utilsService.presentToast(
+          error,
+          4000,
+          'OK',
+          true
+        );
       } finally {
         loader.dismiss();
-        prom.unsubscribe()
+        promise.unsubscribe();
       }
 
     })
@@ -112,13 +117,13 @@ export class CollectionsPage implements OnInit {
   }
 
 
-  private async _saveCollect(payment: boolean): Promise<void> {
+  private async _saveCollect(paidFee: boolean): Promise<void> {
     const loader = await this.utilsService.presentLoader('Generando recibo...');
     loader.present();
 
     try {
 
-      if (payment) { // Valida que la cuota fue pagada
+      if (paidFee) { // Valida que la cuota fue pagada
 
         const data: Credit = {
           feesPaid: this.credit[0].feesPaid + 1,
@@ -132,7 +137,7 @@ export class CollectionsPage implements OnInit {
       const collection: Collection = {
         id: `${moment().format("YYYYMMDDSS")}-${this.credit[0].id}`,
         createdAt: moment().tz('America/Bogota').format(),
-        paid: payment,
+        paid: paidFee,
         amountPaid: this.credit[0].feesTotalAmount,
         uid: localStorage.getItem("uid")
       }
