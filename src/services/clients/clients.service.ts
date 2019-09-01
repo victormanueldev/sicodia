@@ -55,7 +55,7 @@ export class ClientsService {
    * @param client 
    */
   addClient(client: Client): Promise<void>{
-    return this.clientsCollection.doc<Client>(client.id.toString()).set(client);
+    return this.clientsCollection.doc<Client>(client.id).set(client);
   }
 
   /**

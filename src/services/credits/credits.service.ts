@@ -3,7 +3,6 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
 import { Credit } from 'src/models/credit.model';
-import { Collection } from 'src/models/collection.moldel';
 
 @Injectable({
   providedIn: 'root'
@@ -40,7 +39,7 @@ export class CreditsService {
   }
 
   getCreditByClient(idClient: string): Observable<Credit[]>{
-    return this.afs.collection<Credit>('creditos', ref => ref.where('idClient', '==', parseInt(idClient)) ).valueChanges();
+    return this.afs.collection<Credit>('creditos', ref => ref.where('idClient', '==', idClient)).valueChanges();
   }
 
   addCredit(data: Credit): Promise<void> {
@@ -55,7 +54,4 @@ export class CreditsService {
     return this.creditsCollection.doc(id).delete();
   }
 
-  addCollection(idCredit: string, data: Collection): Promise<void>{
-    return this.creditsCollection.doc<Credit>(idCredit).collection<Collection>('recaudos').doc(data.id).set(data);
-  }
 }

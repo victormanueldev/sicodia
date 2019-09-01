@@ -63,7 +63,8 @@ export class CreateClientsPage implements OnInit {
 
     //Data to send
     const client: Client = {
-      ...this.mainForm.value.client
+      ...this.mainForm.value.client,
+      billingState: 'Al dia'
     }
 
     const credit: Credit = {
@@ -74,6 +75,7 @@ export class CreateClientsPage implements OnInit {
       profitPercentage: 1,
       state: 'Acreditado',
       feesPaid: 0,
+      feesNotPaid: 0,
       outstandingFees: this.mainForm.value.credit.numberFees, 
       balance: this.mainForm.value.credit.totalAmount,
       createdAt: moment().tz("America/Bogota").toISOString()

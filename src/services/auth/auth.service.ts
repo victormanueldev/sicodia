@@ -46,7 +46,6 @@ export class AuthService {
    * Cerrar sesión en Firebase
    */
   logout(): Promise<void> {
-    console.log("Logout")
     return this.afAuth.auth.signOut();
   }
 }

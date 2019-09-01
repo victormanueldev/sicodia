@@ -10,6 +10,7 @@ export interface Credit {
     billingFrequency?    : string;   // Frecuencia de cobro
     state?               : string;   // Estado del credito (PENDIENTE, APROBADO, ACREDITATO, RECHAZADO, PAGADO)
     feesPaid?            : number;   // Nro. de cuotas pagadas
+    feesNotPaid?         : number;   // Nro. de cuotas no pagadas
     outstandingFees?     : number;   // Nro. de cuotas pendientes
     balance?             : number;   // Saldo total
     createdAt?           : string;   // Fecha de realización del crédito

@@ -9,6 +9,7 @@ import { Collection } from 'src/models/collection.moldel';
 import * as moment from 'moment-timezone';
 import { AuthService } from 'src/services/auth/auth.service';
 import { User } from 'src/models/user.model';
+import { CollectionsService } from 'src/services/collections/collections.service';
 
 @Component({
   selector: 'app-collections',
@@ -21,13 +22,13 @@ export class CollectionsPage implements OnInit {
   filteredClients: Client[];
   credit: Credit[];
   userData: User;
-
+  idClient: string;
 
   constructor(
     private clientsService: ClientsService,
-    private creditsServices: CreditsService,
-    private utilsService: UtilsService,
-    private authService: AuthService
+    private creditsService: CreditsService,
+    private collectService: CollectionsService,
+    private utilsService: UtilsService
   ) { }
 
   ngOnInit() {
@@ -36,9 +37,6 @@ export class CollectionsPage implements OnInit {
       this.filteredClients = this.clients;
     });
 
-    this.authService.user$.subscribe(res => {
-      this.userData = res;
-    })
   }
 
   filterClients(filterValue: string): void {
@@ -50,7 +48,9 @@ export class CollectionsPage implements OnInit {
     const loader = await this.utilsService.presentLoader('Obteniendo datos...');
     loader.present();
 
-    const promise = this.creditsServices.getCreditByClient(idClient).subscribe(res => {
+    this.idClient = idClient;
+
+    const promise = this.creditsService.getCreditByClient(idClient).subscribe(res => {
       try {
 
         if (res.length === 0) {
@@ -63,6 +63,7 @@ export class CollectionsPage implements OnInit {
             Cuotas pendientes: <b>${this.credit[0].outstandingFees}</b><br>
             Cuota actual: <b>${this.credit[0].feesPaid + 1}</b><br>
             Cuotas pagadas: <b>${this.credit[0].feesPaid}</b><br>
+            Cuotas no pagadas: <b>${this.credit[0].feesNotPaid}</b><br>
             Total crédito: <b>$ ${this.credit[0].totalAmount.toLocaleString('DE-de')}</b><br>
             Saldo total: <b>$ ${this.credit[0].balance.toLocaleString('DE-de')}</b><br><br>
             Valor cuota: <b>$ ${this.credit[0].feesTotalAmount.toLocaleString('DE-de')}</b>
@@ -131,10 +132,13 @@ export class CollectionsPage implements OnInit {
           balance: this.credit[0].balance - this.credit[0].feesTotalAmount
         }
 
-        await this.creditsServices.updateCredit(this.credit[0].id, data);
+        await this.creditsService.updateCredit(this.credit[0].id, data);
+      } else {
+        await this.creditsService.updateCredit(this.credit[0].id, { feesNotPaid: this.credit[0].feesNotPaid + 1 });
+        await this.clientsService.updateClient({ billingState: 'Atrasado' }, (this.idClient));
       }
 
-      const collection: Collection = {
+      const collect: Collection = {
         id: `${moment().format("YYYYMMDDSS")}-${this.credit[0].id}`,
         createdAt: moment().tz('America/Bogota').format(),
         paid: paidFee,
@@ -142,7 +146,7 @@ export class CollectionsPage implements OnInit {
         uid: localStorage.getItem("uid")
       }
 
-      await this.creditsServices.addCollection(this.credit[0].id, collection);
+      await this.collectService.addCollection(collect);
 
       this.utilsService.presentToast(
         'Información guardada',

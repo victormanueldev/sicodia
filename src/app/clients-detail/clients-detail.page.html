@@ -22,7 +22,7 @@
         </ion-text>
         <p>CC: {{ client.id }}</p>
       </ion-label>
-      <ion-badge color="success">{{ client.billingState }}</ion-badge>
+      <ion-badge color="{{ client.billingState == 'Atrasado' ? 'danger' : 'success'}}">{{ client.billingState }}</ion-badge>
     </ion-item>
 
     <ion-card-content>
