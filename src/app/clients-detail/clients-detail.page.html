@@ -74,7 +74,7 @@
       <ion-label>Crédito activo</ion-label>
     </ion-list-header>
     <div class="align-center">
-      <ion-spinner color="primary" *ngIf="!activeCredit"></ion-spinner>
+      <ion-spinner color="primary" *ngIf="loaderActiveCredit"></ion-spinner>
     </div>
     <ion-card *ngIf="activeCredit">
       <ion-item>
@@ -182,8 +182,16 @@
           </ion-row>
         </ion-grid>
       </ion-card-content>
-
     </ion-card>
+
+    <ion-item *ngIf="activeCreditEmpty === true">
+      <ion-label text-wrap>
+        <ion-text class="ion-text-center">
+          <h3>No hay créditos activos</h3>
+        </ion-text>
+      </ion-label>
+    </ion-item>
+
   </ion-list>
 
   <ion-list>

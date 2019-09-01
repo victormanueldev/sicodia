@@ -18,6 +18,10 @@ export class ClientsDetailPage implements OnInit {
   client: Client = null;
   activeCredit: Credit = null;
   credits: Credit[] = [];
+  activeCreditEmpty: boolean;
+
+  // Loader
+  loaderActiveCredit: boolean = true;
 
   constructor(
     private clientsSerivice: ClientsService,
@@ -43,12 +47,14 @@ export class ClientsDetailPage implements OnInit {
   private _loadCredits(): void {
     this.creditsService.getCreditByClient(this.clientId).subscribe(res => {
       this.credits = res;
+      this.loaderActiveCredit = false;
       this.credits.forEach((credit, index) => {
         if(credit.state == 'Acreditado'){
           this.activeCredit = credit;
           this.credits.splice(index);
         }
       });
+      this.activeCredit ? this.activeCreditEmpty = false : this.activeCreditEmpty = true;
     });
   }
 

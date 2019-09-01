@@ -32,10 +32,15 @@ export class CollectionsPage implements OnInit {
   ) { }
 
   ngOnInit() {
+
     this.clientsService.getClients().subscribe(res => {
       this.clients = res;
       this.filteredClients = this.clients;
     });
+
+    this.creditsService.getCredits().subscribe(res => {
+      return res
+    })
 
   }
 
@@ -77,12 +82,14 @@ export class CollectionsPage implements OnInit {
         );
 
       } catch (error) {
+
         this.utilsService.presentToast(
           error,
           4000,
           'OK',
           true
         );
+
       } finally {
         loader.dismiss();
         promise.unsubscribe();
@@ -106,7 +113,7 @@ export class CollectionsPage implements OnInit {
           this._saveCollect(false);
         }
       },
-      // Boton Pago
+      // Boton PAGO
       {
         text: 'Paga',
         handler: () => {
@@ -129,13 +136,15 @@ export class CollectionsPage implements OnInit {
         const data: Credit = {
           feesPaid: this.credit[0].feesPaid + 1,
           outstandingFees: this.credit[0].outstandingFees - 1,
-          balance: this.credit[0].balance - this.credit[0].feesTotalAmount
+          balance: this.credit[0].balance - this.credit[0].feesTotalAmount,
         }
 
         await this.creditsService.updateCredit(this.credit[0].id, data);
       } else {
+
         await this.creditsService.updateCredit(this.credit[0].id, { feesNotPaid: this.credit[0].feesNotPaid + 1 });
         await this.clientsService.updateClient({ billingState: 'Atrasado' }, (this.idClient));
+
       }
 
       const collect: Collection = {
@@ -157,13 +166,14 @@ export class CollectionsPage implements OnInit {
 
 
     } catch (error) {
-      console.log(error)
+
       this.utilsService.presentToast(
         'Error al guardar la información',
         4000,
         'OK',
         true
       );
+
     } finally {
       loader.dismiss();
     }
