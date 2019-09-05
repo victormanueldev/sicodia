@@ -16,6 +16,7 @@ import { AngularFirestoreModule } from "@angular/fire/firestore";
 import { ClientsService } from 'src/services/clients/clients.service';
 import { CreditsService } from 'src/services/credits/credits.service';
 import { AuthService } from 'src/services/auth/auth.service';
+import { FCM } from '@ionic-native/fcm/ngx';
 
 @NgModule({
   declarations: [AppComponent],
@@ -34,7 +35,8 @@ import { AuthService } from 'src/services/auth/auth.service';
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     ClientsService,
     CreditsService,
-    AuthService
+    AuthService,
+    FCM
   ],
   bootstrap: [AppComponent]
 })

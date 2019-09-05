@@ -7,7 +7,6 @@ import { AlertButton } from '@ionic/core';
 import { Credit } from 'src/models/credit.model';
 import { Collection } from 'src/models/collection.moldel';
 import * as moment from 'moment-timezone';
-import { AuthService } from 'src/services/auth/auth.service';
 import { User } from 'src/models/user.model';
 import { CollectionsService } from 'src/services/collections/collections.service';
 
