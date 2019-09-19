@@ -9,6 +9,8 @@ import { Collection } from 'src/models/collection.moldel';
 import * as moment from 'moment-timezone';
 import { User } from 'src/models/user.model';
 import { CollectionsService } from 'src/services/collections/collections.service';
+import * as ColombiaHolidays from 'colombia-holidays';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-collections',
@@ -22,13 +24,19 @@ export class CollectionsPage implements OnInit {
   credit: Credit[];
   userData: User;
   idClient: string;
+  isHoliday: boolean = false;
 
   constructor(
     private clientsService: ClientsService,
     private creditsService: CreditsService,
     private collectService: CollectionsService,
-    private utilsService: UtilsService
+    private utilsService: UtilsService,
+    private router: Router
   ) { }
+
+  ionViewDidEnter(){
+    this._verifyHolidayOrSunday();
+  }
 
   ngOnInit() {
 
@@ -43,11 +51,42 @@ export class CollectionsPage implements OnInit {
 
   }
 
+  /**
+   * Verifica si la fecha actual es festivo o domingo
+   */
+  private _verifyHolidayOrSunday(): void {
+    // Obtiene todos los festivos en colombia para el año determinado
+    const holidays = ColombiaHolidays.getColombiaHolidaysByYear(moment().tz("America/Bogota").year())
+
+    //Valida si es domingo
+    if(moment().tz("America/Bogota").day() === 0){
+      this.isHoliday = true;
+    }
+
+    // Valida si es festivo
+    holidays.forEach(celebrationDay => {
+      if(moment(celebrationDay.holiday, "YYYY-MM-DD").format("YYYY-MM-DD") == moment().tz("America/Bogota").format("YYYY-MM-DD")){
+        this.isHoliday = true;
+      }
+    });
+
+  }
+
   filterClients(filterValue: string): void {
     this.clients = this.filteredClients.filter(client => client.id.toString().toLowerCase().indexOf(filterValue.toLowerCase()) > -1);
   }
 
   async collect(idClient: string, fullNameClient: string): Promise<void> {
+
+    if(this.isHoliday){
+      this.utilsService.presentToast(
+        'No es posible hacer recaudos hoy',
+        8000,
+        'OK',
+        true
+      );
+      return;
+    }
 
     const loader = await this.utilsService.presentLoader('Obteniendo datos...');
     loader.present();
@@ -123,7 +162,10 @@ export class CollectionsPage implements OnInit {
     ]
   }
 
-
+  /**
+   * Guarda el pago realizado en la base de datos
+   * @param paidFee Paga/No paga
+   */
   private async _saveCollect(paidFee: boolean): Promise<void> {
     const loader = await this.utilsService.presentLoader('Generando recibo...');
     loader.present();

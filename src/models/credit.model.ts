@@ -6,8 +6,8 @@ export interface Credit {
     totalAmount?         : number;   // Monto total del crédito
     feesTotalAmount?     : number;   // Valor total de la cuota
     numberFees?          : number;   // Numero total de cutoas
-    profitPercentage?    : number;   // Porcentaje de Ganancia
-    billingFrequency?    : string;   // Frecuencia de cobro
+    profitTotal?         : number;   // Total de Ganancia
+    creditDuration?      : string;   // Duracion del cédito
     state?               : string;   // Estado del credito (PENDIENTE, APROBADO, ACREDITATO, RECHAZADO, PAGADO)
     feesPaid?            : number;   // Nro. de cuotas pagadas
     feesNotPaid?         : number;   // Nro. de cuotas no pagadas

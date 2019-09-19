@@ -1,32 +1,39 @@
 <ion-header>
-    <ion-toolbar>
-        <ion-buttons slot="start">
-          <ion-back-button defaultHref="home"></ion-back-button>
-        </ion-buttons>
-        <ion-title>Recaudos</ion-title>
-      </ion-toolbar>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Recaudos</ion-title>
+  </ion-toolbar>
 </ion-header>
 
-  <ion-content>
-    <!-- Searchbar with cancel button shown on focus -->
-    <ion-searchbar placeholder="Buscar por cédula..." showCancelButton="focus" (ionInput)="filterClients($event.target.value)"></ion-searchbar>
+<ion-content>
+  <!-- Searchbar with cancel button shown on focus -->
+  <ion-searchbar placeholder="Buscar por cédula..." showCancelButton="focus"
+    (ionInput)="filterClients($event.target.value)"></ion-searchbar>
 
-    <!-- Listado de clientes -->
-    <ion-list>
-        <ion-card *ngFor="let client of clients">
-            <ion-item>
-              <ion-icon name="contact" slot="start"></ion-icon>
-              <ion-label text-wrap>
-                  <ion-text>
-                    <h3>{{ client.fullName }}</h3>
-                  </ion-text>
-                  <p><b>C.C. </b>{{ client.id }}</p>
-                </ion-label>
-              <ion-button fill="outline" slot="end" (click)="collect(client.id, client.fullName)">Cobrar</ion-button>
-            </ion-item>
-          </ion-card>
-    </ion-list>
+  <!-- Loader -->
+  <div class="ion-text-center ion-margin-top" *ngIf="!clients">
+    <ion-spinner color="primary" *ngIf="!clients" class="ion-text-center"></ion-spinner>
+  </div>
 
 
-  
-  </ion-content>
+  <!-- Listado de clientes -->
+  <ion-list>
+    <ion-card *ngFor="let client of clients">
+      <ion-item>
+        <ion-icon name="contact" slot="start"></ion-icon>
+        <ion-label text-wrap>
+          <ion-text>
+            <h3>{{ client.fullName }}</h3>
+          </ion-text>
+          <p><b>C.C. </b>{{ client.id }}</p>
+        </ion-label>
+        <ion-button fill="outline" slot="end" (click)="collect(client.id, client.fullName)">Cobrar</ion-button>
+      </ion-item>
+    </ion-card>
+  </ion-list>
+
+
+
+</ion-content>

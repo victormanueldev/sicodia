@@ -15,8 +15,13 @@
       <ion-button fill="outline" slot="end" (click)="toCreate()">Crear</ion-button>
     </ion-item>
   </ion-card>
-    <!-- Searchbar with cancel button shown on focus -->
-    <ion-searchbar placeholder="Buscar por cédula..." showCancelButton="focus" (ionInput)="filterClients($event.target.value)"></ion-searchbar>
+  <!-- Searchbar with cancel button shown on focus -->
+  <ion-searchbar placeholder="Buscar por cédula..." showCancelButton="focus" (ionInput)="filterClients($event.target.value)"></ion-searchbar>
+  <!-- Loader -->
+  <div class="ion-text-center ion-margin-top" *ngIf="!clients">
+    <ion-spinner color="primary" *ngIf="!clients" class="ion-text-center"></ion-spinner>
+  </div>
+
   <ion-list>
     <ion-item detail="true" *ngFor="let client of clients" (click)="toDetails(client.id)">
         <ion-label text-wrap>
