@@ -24,8 +24,8 @@ export class UsersService {
       map(actions => {
         return actions.map(action => {
           const data = action.payload.doc.data();
-          const id = action.payload.doc.id;
-          return { id, ...data };
+          const uid = action.payload.doc.id;
+          return { uid, ...data };
         })
       })
     );

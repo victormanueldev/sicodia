@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { ClientsService } from 'src/services/clients/clients.service';
 import { CreditsService } from 'src/services/credits/credits.service';
-import { UtilsService } from 'src/services/utils/utils.service';
 import { ActivatedRoute } from '@angular/router';
 import { Client } from 'src/models/client.model';
 import { Credit } from 'src/models/credit.model';
-import { map } from 'rxjs/operators';
+import { ModalController } from '@ionic/angular';
+import { ModalPage } from './modal-renewal/modal-renewal';
 
 @Component({
   selector: 'app-clients-detail',
@@ -26,8 +26,8 @@ export class ClientsDetailPage implements OnInit {
   constructor(
     private clientsSerivice: ClientsService,
     private creditsService: CreditsService,
-    private utils: UtilsService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private modalCtrl: ModalController
   ) { }
 
   ngOnInit() {
@@ -56,6 +56,15 @@ export class ClientsDetailPage implements OnInit {
       });
       this.activeCredit ? this.activeCreditEmpty = false : this.activeCreditEmpty = true;
     });
+  }
+
+  async openRenewalModal(): Promise<void> {
+    const modal = await this.modalCtrl.create({
+      component: ModalPage,
+      componentProps: this.client
+    });
+
+    modal.present();
   }
 
 }

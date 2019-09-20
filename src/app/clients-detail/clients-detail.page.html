@@ -73,9 +73,11 @@
     <ion-list-header>
       <ion-label>Crédito activo</ion-label>
     </ion-list-header>
-    <div class="align-center">
+
+    <div class="ion-text-center ion-margin-top">
       <ion-spinner color="primary" *ngIf="loaderActiveCredit"></ion-spinner>
     </div>
+
     <ion-card *ngIf="activeCredit">
       <ion-item>
         <ion-label text-wrap>
@@ -184,6 +186,14 @@
       </ion-card-content>
     </ion-card>
 
+    <ion-card>
+      <ion-item>
+        <ion-icon name="swap" slot="start"></ion-icon>
+        <ion-label>Nuevo crédito</ion-label>
+        <ion-button fill="outline" slot="end" (click)="openRenewalModal()">Solicitar</ion-button>
+      </ion-item>
+    </ion-card>
+
     <ion-item *ngIf="activeCreditEmpty === true">
       <ion-label text-wrap>
         <ion-text class="ion-text-center">
@@ -199,8 +209,8 @@
       <ion-label>Historial de créditos</ion-label>
     </ion-list-header>
 
-    <div class="align-center">
-      <ion-spinner color="primary" *ngIf="!credits" class="align-center"></ion-spinner>
+    <div class="ion-text-center ion-margin-top">
+      <ion-spinner color="primary" *ngIf="!credits" class="ion-text-center ion-margin-top"></ion-spinner>
     </div>
 
     <div *ngIf="credits">
