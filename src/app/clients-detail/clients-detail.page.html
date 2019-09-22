@@ -9,8 +9,8 @@
 
 <ion-content>
 
-  <div class="align-center ion-margin-top">
-    <ion-spinner color="primary" *ngIf="!client" class="align-center"></ion-spinner>
+  <div class="ion-text-center ion-margin-top">
+    <ion-spinner color="primary" *ngIf="!client" class="ion-text-center"></ion-spinner>
   </div>
 
   <ion-card *ngIf="client">
@@ -73,9 +73,11 @@
     <ion-list-header>
       <ion-label>Crédito activo</ion-label>
     </ion-list-header>
-    <div class="align-center">
+
+    <div class="ion-text-center ion-margin-top">
       <ion-spinner color="primary" *ngIf="loaderActiveCredit"></ion-spinner>
     </div>
+
     <ion-card *ngIf="activeCredit">
       <ion-item>
         <ion-label text-wrap>
@@ -124,7 +126,7 @@
             </ion-col>
             <ion-col size="5" class="align-end">
               <ion-label>
-                <p>{{ activeCredit.billingFrequency }}</p>
+                <p>{{ activeCredit.creditDuration }}</p>
               </ion-label>
             </ion-col>
           </ion-row>
@@ -171,7 +173,7 @@
           <ion-row>
             <ion-col size="7">
               <ion-label text-wrap>
-                <strong>Fecha acreditacióm:</strong>
+                <strong>Fecha acreditación:</strong>
               </ion-label>
             </ion-col>
             <ion-col size="5" class="align-end">
@@ -182,6 +184,14 @@
           </ion-row>
         </ion-grid>
       </ion-card-content>
+    </ion-card>
+
+    <ion-card>
+      <ion-item>
+        <ion-icon name="swap" slot="start"></ion-icon>
+        <ion-label>Nuevo crédito</ion-label>
+        <ion-button fill="outline" slot="end" (click)="openRenewalModal()">Solicitar</ion-button>
+      </ion-item>
     </ion-card>
 
     <ion-item *ngIf="activeCreditEmpty === true">
@@ -199,8 +209,8 @@
       <ion-label>Historial de créditos</ion-label>
     </ion-list-header>
 
-    <div class="align-center">
-      <ion-spinner color="primary" *ngIf="!credits" class="align-center"></ion-spinner>
+    <div class="ion-text-center ion-margin-top">
+      <ion-spinner color="primary" *ngIf="!credits" class="ion-text-center ion-margin-top"></ion-spinner>
     </div>
 
     <div *ngIf="credits">

@@ -17,17 +17,24 @@ import { ClientsService } from 'src/services/clients/clients.service';
 import { CreditsService } from 'src/services/credits/credits.service';
 import { AuthService } from 'src/services/auth/auth.service';
 import { FCM } from '@ionic-native/fcm/ngx';
+import { ModalPage } from './clients-detail/modal-renewal/modal-renewal';
+import { ReactiveFormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
-  declarations: [AppComponent],
-  entryComponents: [],
+  declarations: [AppComponent, ModalPage],
+  entryComponents: [
+    ModalPage
+  ],
   imports: [
     BrowserModule,
     IonicModule.forRoot(),
     AppRoutingModule,
     AngularFireModule.initializeApp(firebaseConfig),
     AngularFireAuthModule,
-    AngularFirestoreModule
+    AngularFirestoreModule,
+    ReactiveFormsModule,
+    HttpClientModule
   ],
   providers: [
     StatusBar,
