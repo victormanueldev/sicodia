@@ -70,6 +70,7 @@ export class ModalPage {
                 title: 'Nueva solicitud de crédito',
                 body: 'Se ha recibido una nueva solicitud de aprobación de crédito. Toca para ver más',
                 icon: 'myicon',
+                sound: 'default'
             },
             to: ''
         }
@@ -97,12 +98,7 @@ export class ModalPage {
             );
         } catch (error) {
             console.log(error);
-            this.utilsService.presentToast(
-                'Ocurrió un error inesperado',
-                6000,
-                "OK",
-                true
-            );
+            this.utilsService.presentAlert("Error","Error inesperado", error, [ { text: 'OK' }], '');
         } finally {
             loader.dismiss();
         }

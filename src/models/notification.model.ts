@@ -14,4 +14,5 @@ export interface NotificationBody {
     title   : string;
     body    : string;
     icon    : string;
+    sound   : string;
 }

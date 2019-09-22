@@ -18,13 +18,7 @@ export class HomePage implements OnInit{
 
   async ngOnInit() {
     try {
-      await this.fcmService.getTokenDevice();
-      this.utilsService.presentToast(
-        "Token enviado",
-        6000,
-        "OK",
-        true
-      );
+      let token = await this.fcmService.getTokenDevice();
     } catch (error) {
       this.utilsService.presentToast(
         error,
