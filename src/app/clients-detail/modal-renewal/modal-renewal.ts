@@ -78,16 +78,15 @@ export class ModalPage {
 
             await this.usersService.getUsers().subscribe(res => {
                 this.users = res;
+                this.users.map(async user => {
+                    if(user.role == 'admin' && user.uid !== localStorage.getItem('uid')){
+                        notification.to = user.token;
+                        await this.fcm.sendNotifications(notification);
+                    }
+                });
+    
             });
 
-            let promises = this.users.map(async user => {
-                if(user.role == 'admin' && user.uid !== localStorage.getItem('uid')){
-                    notification.to = user.token;
-                    await this.fcm.sendNotifications(notification);
-                }
-            });
-
-            await Promise.all(promises);
 
             await this.creditsService.addCredit(credit);
             this.utilsService.presentToast(

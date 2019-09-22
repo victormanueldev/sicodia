@@ -15,7 +15,7 @@ export class UsersService {
   constructor(
     private afs: AngularFirestore
   ) { 
-    this.usersCollection = this.afs.collection<User>('users');
+    this.usersCollection = this.afs.collection<User>('usuarios');
   }
 
   getUsers(): Observable<User[]> {
