@@ -2,7 +2,7 @@
  * Usuarios
  */
 export interface User {
-    uid?         : string;
+    id?         : string;
     email?       : string;
     role?        : string;  //admin, collector
     name?        : string;

@@ -27,6 +27,7 @@ export class ClientsPage implements OnInit {
     });
 
   }
+  
   toCreate() {
     this.router.navigate(['/create-clients']);
   }

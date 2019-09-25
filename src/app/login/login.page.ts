@@ -48,7 +48,7 @@ export class LoginPage implements OnInit {
 
     try {
       const res = await this.authService.login(this.loginForm.value.email, this.loginForm.value.password);
-      localStorage.setItem("uid", res.user.uid)
+      localStorage.setItem("uid", res.user.uid);
       
       this.router.navigate(['/home']);
     } catch (error) {

@@ -80,24 +80,26 @@ export class ModalPage {
             await this.usersService.getUsers().subscribe(res => {
                 this.users = res;
                 this.users.map(async user => {
-                    if(user.role == 'admin' && user.uid !== localStorage.getItem('uid')){
+                    // Valida que el usuario sea administrados y diferente al usuario logueado
+                    if(user.role == 'admin' && user.id !== localStorage.getItem('uid')){
+                        // Añade el token al objeto de notificacion
                         notification.to = user.token;
+                        // Envia una notificacion por cada usuario que cumpla la condicion
                         await this.fcm.sendNotifications(notification);
                     }
                 });
-    
             });
 
-
             await this.creditsService.addCredit(credit);
+
             this.utilsService.presentToast(
                 'Solicitud enviada',
                 6000,
                 "OK",
                 true
             );
+
         } catch (error) {
-            console.log(error);
             this.utilsService.presentAlert("Error","Error inesperado", error, [ { text: 'OK' }], '');
         } finally {
             loader.dismiss();

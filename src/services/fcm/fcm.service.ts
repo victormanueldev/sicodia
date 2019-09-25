@@ -22,7 +22,7 @@ export class FcmService {
    */
   private _onRefreshTokenUser(): void {
     this.fcm.onTokenRefresh().subscribe(token => {
-      this.usersService.updateUser(this.usersService.getId(), {token});
+      this.usersService.updateUser(this.usersService.getStorageData('uid'), {token});
     });
   }
 
@@ -32,7 +32,7 @@ export class FcmService {
    */
   async getTokenDevice(): Promise<string> {
     const token = await this.fcm.getToken();
-    await this.usersService.updateUser(this.usersService.getId(), {token});
+    await this.usersService.updateUser(this.usersService.getStorageData('uid'), {token});
     return token;
   }
 

@@ -9,48 +9,48 @@ import { map } from 'rxjs/operators';
 })
 export class CollectionsService {
 
- private collectsCollections: AngularFirestoreCollection<Collection>;
- private collections: Observable<Collection[]>
+  private collectsCollections: AngularFirestoreCollection<Collection>;
+  private collections: Observable<Collection[]>
 
   constructor(
     private afs: AngularFirestore
   ) {
-    this.collectsCollections = this.afs.collection<Collection>('recaudos');
-   }
+    this.collectsCollections = this.afs.collection<Collection>('recaudos'); 
+  }
 
-   getCollections(): Observable<Collection[]> {
+  getCollections(): Observable<Collection[]> {
     this.collections = this.collectsCollections.snapshotChanges().pipe(
       map(actions => {
         return actions.map(action => {
           const data = action.payload.doc.data();
           const id = action.payload.doc.id;
 
-          return {id, ...data};
+          return { id, ...data };
         })
       })
     );
 
-     return this.collections
-   }
+    return this.collections
+  }
 
-   getCollect(id: string): Observable<Collection>{
-     return this.collectsCollections.doc<Collection>(id).valueChanges();
-   }
+  getCollect(id: string): Observable<Collection> {
+    return this.collectsCollections.doc<Collection>(id).valueChanges();
+  }
 
-   getCollectByUser(idUser: string): Observable<Collection[]> {
-     return this.afs.collection<Collection>('recaudos', ref => ref.where('idUser', '==', idUser)).valueChanges();
-   }
+  getCollectByUser(idUser: string): Observable<Collection[]> {
+    return this.afs.collection<Collection>('recaudos', ref => ref.where('idUser', '==', idUser)).valueChanges();
+  }
 
 
-  addCollection(data: Collection): Promise<void>{
+  addCollection(data: Collection): Promise<void> {
     return this.collectsCollections.doc<Collection>(data.id).set(data);
   }
 
-  updateCollection(idCollecion: string, data: Collection): Promise<void>{
+  updateCollection(idCollecion: string, data: Collection): Promise<void> {
     return this.collectsCollections.doc<Collection>(idCollecion).update(data);
   }
 
-  removeCollection(idCollecion: string): Promise<void>{
+  removeCollection(idCollecion: string): Promise<void> {
     return this.collectsCollections.doc<Collection>(idCollecion).delete();
   }
 }

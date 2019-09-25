@@ -10,7 +10,7 @@ import * as moment from 'moment-timezone';
 import { User } from 'src/models/user.model';
 import { CollectionsService } from 'src/services/collections/collections.service';
 import * as ColombiaHolidays from 'colombia-holidays';
-import { Router } from '@angular/router';
+import { UsersService } from 'src/services/users/users.service';
 
 @Component({
   selector: 'app-collections',
@@ -22,8 +22,9 @@ export class CollectionsPage implements OnInit {
   clients: Client[];
   filteredClients: Client[];
   credit: Credit[];
-  userData: User;
   idClient: string;
+  userData: User;
+  fullNameClient: string;
   isHoliday: boolean = false;
 
   constructor(
@@ -31,7 +32,7 @@ export class CollectionsPage implements OnInit {
     private creditsService: CreditsService,
     private collectService: CollectionsService,
     private utilsService: UtilsService,
-    private router: Router
+    private usersService: UsersService
   ) { }
 
   ionViewDidEnter(){
@@ -40,14 +41,21 @@ export class CollectionsPage implements OnInit {
 
   ngOnInit() {
 
+    // Obtiene todos los clientes y los almacena en diferentes variables
     this.clientsService.getClients().subscribe(res => {
       this.clients = res;
       this.filteredClients = this.clients;
     });
 
+    // Obtiene todos los créditos
     this.creditsService.getCredits().subscribe(res => {
-      return res
-    })
+      return res;
+    });
+
+    // Obtiene la información del usuario
+    this.usersService.getUser(this.usersService.getStorageData('uid')).subscribe(res => {
+      this.userData = res;
+    });
 
   }
 
@@ -92,6 +100,7 @@ export class CollectionsPage implements OnInit {
     loader.present();
 
     this.idClient = idClient;
+    this.fullNameClient = fullNameClient;
 
     const promise = this.creditsService.getCreditByClient(idClient).subscribe(res => {
       try {
@@ -102,12 +111,22 @@ export class CollectionsPage implements OnInit {
 
         this.credit = res;
 
+        if(this.credit[0].balance == 0 && this.credit[0].state == 'Pagado') {
+          this.utilsService.presentToast(
+            'Este cliente no tiene créditos activos',
+            8000,
+            'OK',
+            true
+          );
+          return;
+        }
+
         const messageAlert = `
             Cuotas pendientes: <b>${this.credit[0].outstandingFees}</b><br>
             Cuota actual: <b>${this.credit[0].feesPaid + 1}</b><br>
             Cuotas pagadas: <b>${this.credit[0].feesPaid}</b><br>
             Cuotas no pagadas: <b>${this.credit[0].feesNotPaid}</b><br>
-            Total crédito: <b>$ ${this.credit[0].totalAmount.toLocaleString('DE-de')}</b><br>
+            Total crédito: <b>$ ${ Number(this.credit[0].totalAmount).toLocaleString('DE-de')}</b><br>
             Saldo total: <b>$ ${this.credit[0].balance.toLocaleString('DE-de')}</b><br><br>
             Valor cuota: <b>$ ${this.credit[0].feesTotalAmount.toLocaleString('DE-de')}</b>
         `;
@@ -174,12 +193,20 @@ export class CollectionsPage implements OnInit {
 
       if (paidFee) { // Valida que la cuota fue pagada
 
-        const data: Credit = {
+        let data: Credit = {
           feesPaid: this.credit[0].feesPaid + 1,
           outstandingFees: this.credit[0].outstandingFees - 1,
           balance: this.credit[0].balance - this.credit[0].feesTotalAmount,
+          state: null
         }
 
+        // Valida que el credito fue pagado
+        if(data.balance == 0) {
+          data.state = 'Pagado'
+        } else {
+          data.state = 'Acreditado'
+        }
+        
         await this.creditsService.updateCredit(this.credit[0].id, data);
       } else {
 
@@ -193,7 +220,10 @@ export class CollectionsPage implements OnInit {
         createdAt: moment().tz('America/Bogota').format(),
         paid: paidFee,
         amountPaid: this.credit[0].feesTotalAmount,
-        uid: localStorage.getItem("uid")
+        uid: this.userData.id,
+        username: this.userData.name,
+        idClient: this.idClient,
+        fullNameClient: this.fullNameClient
       }
 
       await this.collectService.addCollection(collect);
@@ -207,7 +237,7 @@ export class CollectionsPage implements OnInit {
 
 
     } catch (error) {
-
+      
       this.utilsService.presentToast(
         'Error al guardar la información',
         4000,

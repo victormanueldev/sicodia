@@ -4,42 +4,103 @@
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
     <ion-title>
-      Home
+      Inicio
     </ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-    <ion-card class="welcome-card">
-      <img src="/assets/shapes.svg" alt="" />
-      <ion-card-header>
-        <ion-card-subtitle>Get Started</ion-card-subtitle>
-        <ion-card-title>Welcome to Ionic</ion-card-title>
-      </ion-card-header>
+
+  <ion-card>
+    <ion-grid>
+      <ion-row>
+
+        <!-- Pie chart -->
+        <ion-col size="6" class="ion-padding">
+          <ion-text color="dark">
+            <h5>Resumen diario</h5>
+          </ion-text>
+          <canvas id="chart-pie" #chartpie></canvas>
+        </ion-col>
+
+        <!-- Chart legend -->
+        <ion-col size="6">
+          <div class="cchart-legend">
+            <ion-grid>
+              <ion-row>
+                <ion-col size="12">
+                  <ion-item>
+                    <ion-button slot="end" shape="round" color="light"><ion-icon name="calendar"></ion-icon></ion-button>
+                    
+                    <ion-datetime 
+                      display-format="MMM DD"
+                      pickerFormat="YYYY MMM DD"
+                      [pickerOptions]="customPickerOptions"
+                      monthShortNames="Ene, Feb, Mar, Abr, May, Jun, Jul, Ago, Sep, Oct, Nov, Dic"
+                      [(ngModel)]="now"
+                    ></ion-datetime>
+                  </ion-item>
+                </ion-col>
+                <ion-col size="12">
+                  <p class="ion-no-margin">Cuotas pagadas</p>
+                  <ion-badge color="success">$ {{ totalAmountPaid.toLocaleString('DE-de') }}</ion-badge>
+                </ion-col>
+                <ion-col size="12">
+                  <p class="ion-no-margin">Cuotas no pagadas</p>
+                  <ion-badge color="danger">$ {{ totalAmountNotPaid.toLocaleString('DE-de')}}</ion-badge>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          </div>
+        </ion-col>
+
+      </ion-row>
+    </ion-grid>
+  </ion-card>
+
+  <ion-list>
+    <ion-list-header>
+      <ion-label>Listado de cobradores</ion-label>
+    </ion-list-header>
+
+    <!-- Informacion del recaudo -->
+    <ion-card *ngFor="let collector of dailyCollections">
+
+      <ion-item>
+        <ion-icon name="cash" slot="start"></ion-icon>
+        <ion-label text-wrap>
+          <ion-text>
+            <h2>{{ collector.name }}</h2>
+          </ion-text>
+          <p>{{ collector.today }}</p>
+        </ion-label>
+        <ion-chip slot="end">
+          <ion-label color="primary">{{ collector.role == 'admin' ? 'Administrador' : 'Cobrador'}}</ion-label>
+        </ion-chip>
+      </ion-item>
+
       <ion-card-content>
-        <p>Now that your app has been created, you'll want to start building out features and components. Check out some of the resources below for next steps.</p>
+
+        <ion-item>
+          <ion-icon name="arrow-up" slot="start"></ion-icon>
+          <p>Total recaudado</p>
+          <ion-text slot="end" color="success">$ {{ collector.totalCollected.toLocaleString('DE-de') }}</ion-text>
+        </ion-item>
+
+        <ion-item>
+          <ion-icon name="arrow-down" slot="start"></ion-icon>
+          <p>Cuotas no pagadas</p>
+          <ion-text slot="end" color="danger">$ {{ collector.totalNotPaid.toLocaleString('DE-de') }}</ion-text>
+        </ion-item>
+
+        <ion-item (click)="buttonClick()" detail>
+          <ion-label>
+            Ver detalles de recaudo
+          </ion-label>
+        </ion-item>
+
       </ion-card-content>
     </ion-card>
-    <ion-list lines="none">
-      <ion-list-header>
-        <ion-label>Resources</ion-label>
-      </ion-list-header>
-      <ion-item href="https://ionicframework.com/docs/">
-        <ion-icon slot="start" color="medium" name="book"></ion-icon>
-        <ion-label>Ionic Documentation</ion-label>
-      </ion-item>
-      <ion-item href="https://ionicframework.com/docs/building/scaffolding">
-        <ion-icon slot="start" color="medium" name="build"></ion-icon>
-        <ion-label>Scaffold Out Your App</ion-label>
-      </ion-item>
-      <ion-item href="https://ionicframework.com/docs/layout/structure">
-        <ion-icon slot="start" color="medium" name="grid"></ion-icon>
-        <ion-label>Change Your App Layout</ion-label>
-      </ion-item>
-      <ion-item href="https://ionicframework.com/docs/theming/basics">
-        <ion-icon slot="start" color="medium" name="color-fill"></ion-icon>
-        <ion-label>Theme Your App</ion-label>
-      </ion-item>
-      <ion-button expand="block" (click)="update()" >Login</ion-button>
-    </ion-list>
+
+  </ion-list>
 </ion-content>

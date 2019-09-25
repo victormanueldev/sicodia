@@ -24,8 +24,8 @@ export class UsersService {
       map(actions => {
         return actions.map(action => {
           const data = action.payload.doc.data();
-          const uid = action.payload.doc.id;
-          return { uid, ...data };
+          const id = action.payload.doc.id;
+          return { id, ...data };
         })
       })
     );
@@ -37,8 +37,8 @@ export class UsersService {
     return this.usersCollection.doc<User>(id).valueChanges();
   }
 
-  getId(): string {
-    return localStorage.getItem('uid');
+  getStorageData(property: string): string {
+    return localStorage.getItem(property);
   }
 
   updateUser(id: string, data: User): Promise<void> {

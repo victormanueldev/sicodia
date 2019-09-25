@@ -71,7 +71,8 @@ export class CreateClientsPage implements OnInit {
       feesPaid: 0,
       feesNotPaid: 0,
       outstandingFees: this.mainForm.value.credit.numberFees,
-      balance: this.mainForm.value.credit.totalAmount,
+      // Saldo = Valor Cuota * No. de cuotas
+      balance: (this.mainForm.value.credit.feesTotalAmount * this.mainForm.value.credit.numberFees),
       createdAt: moment().tz("America/Bogota").format(),
       acreditedAt: moment().tz("America/Bogota").format()
     }
@@ -86,6 +87,7 @@ export class CreateClientsPage implements OnInit {
         "OK",
         true
       );
+
       this.mainForm.reset();
 
     } catch (error) {

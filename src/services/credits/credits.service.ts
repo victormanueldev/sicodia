@@ -55,6 +55,10 @@ export class CreditsService {
     return this.afs.collection<Credit>('creditos', ref => ref.where('idClient', '==', idClient)).valueChanges();
   }
 
+  getActiveCredits(): Observable<Credit[]> {
+    return this.afs.collection<Credit>('creditos', ref => ref.where('state', '==', 'Acreditado')).valueChanges();
+  }
+
   addCredit(data: Credit): Promise<void> {
     return this.creditsCollection.doc(data.id).set(data);
   }
