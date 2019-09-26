@@ -84,7 +84,7 @@
           <ion-text>
             <h2>{{ activeCredit.id }}</h2>
           </ion-text>
-          <p>Total: $ {{ activeCredit.totalAmount }}</p>
+          <p>Total: $ {{ activeCredit.totalAmount.toLocaleString('DE-de') }}</p>
         </ion-label>
         <ion-badge color="primary">{{ activeCredit.state }}</ion-badge>
       </ion-item>
@@ -113,7 +113,7 @@
             </ion-col>
             <ion-col size="5" class="align-end">
               <ion-label>
-                <p>$ {{ activeCredit.feesTotalAmount }}</p>
+                <p>$ {{ activeCredit.feesTotalAmount.toLocaleString('DE-de') }}</p>
               </ion-label>
             </ion-col>
           </ion-row>
@@ -147,6 +147,19 @@
           <ion-row>
             <ion-col size="7">
               <ion-label text-wrap>
+                <strong>Cuotas pagadas:</strong>
+              </ion-label>
+            </ion-col>
+            <ion-col size="5" class="align-end">
+              <ion-label>
+                <p> {{ activeCredit.feesNotPaid}}</p>
+              </ion-label>
+            </ion-col>
+          </ion-row>
+
+          <ion-row>
+            <ion-col size="7">
+              <ion-label text-wrap>
                 <strong>Cuotas pendientes:</strong>
               </ion-label>
             </ion-col>
@@ -165,7 +178,7 @@
             </ion-col>
             <ion-col size="5" class="align-end">
               <ion-label>
-                <p>$ {{ activeCredit.balance }}</p>
+                <p>$ {{ activeCredit.balance.toLocaleString('DE-de') }}</p>
               </ion-label>
             </ion-col>
           </ion-row>
@@ -221,7 +234,7 @@
           </ion-text>
           <p>Total: $ {{ credit.totalAmount }}</p>
         </ion-label>
-        <ion-badge color="secondary">{{ credit.state }}</ion-badge>
+        <ion-badge color="{{ credit.state == 'Pagado' ? 'success' : 'warning' }}">{{ credit.state }}</ion-badge>
       </ion-item>
       <ion-item *ngIf="credits.length === 0">
         <ion-label text-wrap>

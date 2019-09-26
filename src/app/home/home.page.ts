@@ -138,12 +138,15 @@ export class HomePage implements OnInit {
     }
   }
 
+  /**
+   * Actualiza el gráfico con los nuevos valores de recaudo
+   * @param paidPercent 
+   * @param notPaidPercent 
+   */
   private _drawGraph(paidPercent: number, notPaidPercent: number): void {
-
     this.chart.data.datasets[0].data[0] = paidPercent;
     this.chart.data.datasets[0].data[1] = notPaidPercent;
     this.chart.update();
-
   }
 
   /**
