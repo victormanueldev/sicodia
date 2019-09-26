@@ -1,0 +1,35 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-title>Detalle de recaudos</ion-title>
+        <ion-buttons slot="end">
+            <ion-button (click)="dismissModal()">Cerrar</ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content>
+    <!-- Loader -->
+    <div class="ion-text-center ion-margin-top" *ngIf="!collections">
+        <ion-spinner color="primary" *ngIf="!collections" class="ion-text-center"></ion-spinner>
+    </div>
+
+    <ion-list>
+        <ion-item *ngFor="let collect of collections" >
+            <ion-label text-wrap>
+                <ion-text>
+                    <h3>{{ collect.fullNameClient}}</h3>
+                </ion-text>
+                <p><b>Cuota total:  </b>$ {{ collect.amountPaid.toLocaleString('DE-de') }}</p>
+            </ion-label>
+            <ion-badge slot="end" color="{{ collect.paid ? 'success' : 'danger' }}">{{ collect.paid ? 'Pagado' : 'No pagado' }}</ion-badge>
+        </ion-item>
+
+        <ion-item *ngIf="emptyCollections">
+            <ion-label text-wrap>
+              <ion-text class="ion-text-center">
+                <h3>No hay recaudos registrados</h3>
+              </ion-text>
+            </ion-label>
+          </ion-item>
+    </ion-list>
+</ion-content>

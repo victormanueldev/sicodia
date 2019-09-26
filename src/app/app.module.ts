@@ -20,11 +20,13 @@ import { FCM } from '@ionic-native/fcm/ngx';
 import { ModalPage } from './clients-detail/modal-renewal/modal-renewal';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
+import { ModalCollectDetails } from './home/modal-collect-detail/modal-collect-details';
 
 @NgModule({
-  declarations: [AppComponent, ModalPage],
+  declarations: [AppComponent, ModalPage, ModalCollectDetails],
   entryComponents: [
-    ModalPage
+    ModalPage,
+    ModalCollectDetails
   ],
   imports: [
     BrowserModule,

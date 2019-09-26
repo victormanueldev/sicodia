@@ -46,12 +46,13 @@ export class ClientsDetailPage implements OnInit {
 
   private _loadCredits(): void {
     this.creditsService.getCreditByClient(this.clientId).subscribe(res => {
+      
       this.credits = res;
       this.loaderActiveCredit = false;
       this.credits.forEach((credit, index) => {
         if(credit.state == 'Acreditado'){
           this.activeCredit = credit;
-          this.credits.splice(index);
+          this.credits.splice(index, 1);
         }
       });
       this.activeCredit ? this.activeCreditEmpty = false : this.activeCreditEmpty = true;

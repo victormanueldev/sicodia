@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, Renderer2 } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { FcmService } from 'src/services/fcm/fcm.service';
 import { UtilsService } from 'src/services/utils/utils.service';
 import { CreditsService } from 'src/services/credits/credits.service';
@@ -9,6 +9,8 @@ import { User } from 'src/models/user.model';
 import { UsersService } from 'src/services/users/users.service';
 import * as moment from 'moment-timezone';
 import { Chart } from 'chart.js';
+import { ModalController } from '@ionic/angular';
+import { ModalCollectDetails } from './modal-collect-detail/modal-collect-details';
 
 @Component({
   selector: 'app-home',
@@ -18,7 +20,6 @@ import { Chart } from 'chart.js';
 export class HomePage implements OnInit {
 
   @ViewChild('chartpie', { static: false }) chartContainer: ElementRef
-  @ViewChild('parentChart', { static: false }) parentChart: ElementRef
 
   activeCredits: Credit[];
   users: User[];
@@ -41,7 +42,7 @@ export class HomePage implements OnInit {
     private creditsService: CreditsService,
     private collectionsService: CollectionsService,
     private usersService: UsersService,
-    private renderer: Renderer2
+    private modalCtrl: ModalController
   ) {
 
     this.now = moment().tz("America/Bogota").format();
@@ -218,6 +219,15 @@ export class HomePage implements OnInit {
     this.now = moment(newDate, "YYYY-MM-DD HH:mm:ss").format();
     this._calculateTotalExpected();
     this._calculateCollectionsPayments(this.collections)
+  }
+
+  async openModalDetailCollectios(collectorID: string): Promise<void>{
+    const modal = await this.modalCtrl.create({
+      component: ModalCollectDetails,
+      componentProps: { id: collectorID, dateSelected: this.now }
+    });
+
+    modal.present();
   }
 
 

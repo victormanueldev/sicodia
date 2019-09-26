@@ -30,15 +30,14 @@
               <ion-row>
                 <ion-col size="12">
                   <ion-item>
-                    <ion-button slot="end" shape="round" color="light"><ion-icon name="calendar"></ion-icon></ion-button>
-                    
-                    <ion-datetime 
-                      display-format="MMM DD"
-                      pickerFormat="YYYY MMM DD"
+                    <ion-button slot="end" shape="round" color="light">
+                      <ion-icon name="calendar"></ion-icon>
+                    </ion-button>
+
+                    <ion-datetime display-format="MMM DD" pickerFormat="YYYY MMM DD"
                       [pickerOptions]="customPickerOptions"
-                      monthShortNames="Ene, Feb, Mar, Abr, May, Jun, Jul, Ago, Sep, Oct, Nov, Dic"
-                      [(ngModel)]="now"
-                    ></ion-datetime>
+                      monthShortNames="Ene, Feb, Mar, Abr, May, Jun, Jul, Ago, Sep, Oct, Nov, Dic" [(ngModel)]="now">
+                    </ion-datetime>
                   </ion-item>
                 </ion-col>
                 <ion-col size="12">
@@ -62,6 +61,11 @@
     <ion-list-header>
       <ion-label>Listado de cobradores</ion-label>
     </ion-list-header>
+
+    <!-- Loader -->
+    <div class="ion-text-center ion-margin-top" *ngIf="dailyCollections.length === 0">
+      <ion-spinner color="primary" *ngIf="dailyCollections.length === 0" class="ion-text-center"></ion-spinner>
+    </div>
 
     <!-- Informacion del recaudo -->
     <ion-card *ngFor="let collector of dailyCollections">
@@ -93,7 +97,7 @@
           <ion-text slot="end" color="danger">$ {{ collector.totalNotPaid.toLocaleString('DE-de') }}</ion-text>
         </ion-item>
 
-        <ion-item detail>
+        <ion-item detail (click)="openModalDetailCollectios(collector.id)">
           <ion-label>
             Ver detalles de recaudo
           </ion-label>

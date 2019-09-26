@@ -61,7 +61,7 @@ export class ModalPage {
             feesPaid: 0,
             feesNotPaid: 0,
             outstandingFees: this.creditForm.value.numberFees,
-            balance: this.creditForm.value.totalAmount,
+            balance: (this.creditForm.value.feesTotalAmount * this.creditForm.value.numberFees),
             createdAt: moment().tz("America/Bogota").format(),
         }
         

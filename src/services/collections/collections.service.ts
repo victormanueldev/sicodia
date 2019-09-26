@@ -38,7 +38,7 @@ export class CollectionsService {
   }
 
   getCollectByUser(idUser: string): Observable<Collection[]> {
-    return this.afs.collection<Collection>('recaudos', ref => ref.where('idUser', '==', idUser)).valueChanges();
+    return this.afs.collection<Collection>('recaudos', ref => ref.where('uid', '==', idUser)).valueChanges();
   }
 
 
