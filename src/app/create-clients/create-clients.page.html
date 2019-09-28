@@ -10,12 +10,12 @@
 <ion-content>
   <form [formGroup]="mainForm">
 
-    <div formGroupName="client">
-      <ion-item>
-        <ion-label position="floating">Número de cédula</ion-label>
-        <ion-input formControlName="id" name="id" ></ion-input>
-      </ion-item>
+    <ion-item>
+      <ion-label position="floating">Número de cédula</ion-label>
+      <ion-input formControlName="id" name="id" type="number" required></ion-input>
+    </ion-item>
 
+    <div formGroupName="client">
       <ion-item>
         <ion-label position="floating">Nombre completo</ion-label>
         <ion-input formControlName="fullName" name="fullName"></ion-input>
@@ -55,7 +55,7 @@
     <div formGroupName="credit">
       <ion-item>
         <ion-label position="floating">Valor del crédito</ion-label>
-        <ion-select placeholder="Selecciona una opción" formControlName="totalAmount" name="totalAmount" (ionChange)="showAvailablesFees($event)">
+        <ion-select placeholder="Selecciona una opción" formControlName="totalAmount" name="totalAmount" (ionChange)="showAvailablesFees($event)" required>
           <ion-select-option value="" selected>Seleccione un valor</ion-select-option>
           <ion-select-option value="100000">$ 100.000</ion-select-option>
           <ion-select-option value="150000">$ 150.000</ion-select-option>
@@ -81,7 +81,7 @@
 
       <ion-item>
         <ion-label position="floating">Duración del crédito</ion-label>
-        <ion-select formControlName="creditDuration" name="creditDuration" (ionChange)="setFeeTotalAmount($event)">
+        <ion-select formControlName="creditDuration" name="creditDuration" (ionChange)="setFeeTotalAmount($event)" required>
           <ion-select-option value="" selected>Seleccione un valor</ion-select-option>
           <ion-select-option *ngFor="let fee of availableFees" value="{{ fee.duration }}">{{ fee.duration }}</ion-select-option>
         </ion-select>

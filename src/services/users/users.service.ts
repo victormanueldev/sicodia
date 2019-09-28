@@ -18,14 +18,19 @@ export class UsersService {
     this.usersCollection = this.afs.collection<User>('usuarios');
   }
 
-  getUsers(): Observable<User[]> {
+  getUsers(idCompany: number): Observable<User[]> {
 
     this.users = this.usersCollection.snapshotChanges().pipe(
       map(actions => {
         return actions.map(action => {
           const data = action.payload.doc.data();
           const id = action.payload.doc.id;
-          return { id, ...data };
+          const idCompanyUser = data.idCompany;
+          if(idCompanyUser == idCompany){
+            return { id, ...data };
+          } else {
+            return null
+          }
         })
       })
     );

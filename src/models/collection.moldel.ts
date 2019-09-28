@@ -10,4 +10,5 @@ export interface Collection {
     username        : string;
     idClient        : string;    // ID del cliente
     fullNameClient  : string;   // Nombre completo del cliente
+    idCompany       : number;   // ID de la empresa de cobros
 }

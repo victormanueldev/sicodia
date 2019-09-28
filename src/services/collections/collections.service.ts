@@ -18,14 +18,18 @@ export class CollectionsService {
     this.collectsCollections = this.afs.collection<Collection>('recaudos'); 
   }
 
-  getCollections(): Observable<Collection[]> {
+  getCollections(idCompany: number): Observable<Collection[]> {
     this.collections = this.collectsCollections.snapshotChanges().pipe(
       map(actions => {
         return actions.map(action => {
           const data = action.payload.doc.data();
           const id = action.payload.doc.id;
-
-          return { id, ...data };
+          let idCompanyCollection = data.idCompany;
+          if(idCompanyCollection == idCompany){
+            return { id, ...data };
+          }else {
+            return null
+          }
         })
       })
     );
@@ -38,9 +42,8 @@ export class CollectionsService {
   }
 
   getCollectByUser(idUser: string): Observable<Collection[]> {
-    return this.afs.collection<Collection>('recaudos', ref => ref.where('uid', '==', idUser)).valueChanges();
+    return this.afs.collection<Collection>('recaudos', ref => ref.where('uid', '==', idUser).orderBy('paid')).valueChanges();
   }
-
 
   addCollection(data: Collection): Promise<void> {
     return this.collectsCollections.doc<Collection>(data.id).set(data);

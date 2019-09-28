@@ -22,12 +22,13 @@ export class CreditsService {
     this.creditsCollection = this.afs.collection<Credit>('creditos');
   }
 
-  getCredits(): Observable<Credit[]> {
+  getCredits(idCompany: number): Observable<Credit[]> {
     this.credits = this.creditsCollection.snapshotChanges().pipe(
       map(actions => {
         return actions.map(action => {
           const data = action.payload.doc.data();
           const id = action.payload.doc.id;
+          const idCompanyCredit = data.idCompany;
           // Valida que la accion realizada sea una modificacion
           if(action.type === 'modified') {
             // Valida que se completaron las cuotas pendietes
@@ -38,8 +39,11 @@ export class CreditsService {
             }
 
           }
-          
-          return { id, ...data };
+          if(idCompanyCredit == idCompany){
+            return { id, ...data };
+          } else {
+            null
+          }
         })
       })
     )
@@ -55,8 +59,8 @@ export class CreditsService {
     return this.afs.collection<Credit>('creditos', ref => ref.where('idClient', '==', idClient)).valueChanges();
   }
 
-  getActiveCredits(): Observable<Credit[]> {
-    return this.afs.collection<Credit>('creditos', ref => ref.where('state', '==', 'Acreditado')).valueChanges();
+  getActiveCredits(idCompany: number): Observable<Credit[]> {
+    return this.afs.collection<Credit>('creditos', ref => ref.where('state', '==', 'Acreditado').where('idCompany','==',idCompany)).valueChanges();
   }
 
   addCredit(data: Credit): Promise<void> {

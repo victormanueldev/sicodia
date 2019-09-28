@@ -3,11 +3,13 @@
  */
 export interface User {
     id?         : string;
-    email?       : string;
-    role?        : string;  //admin, collector
-    name?        : string;
-    token?       : string;
-    createdAt?   : string;
+    email?      : string;
+    role?       : string;  //admin, collector
+    name?       : string;
+    token?      : string;
+    company?    : string;   // Nombre de la empresa 
+    idCompany?  : number;   // ID de la empresa ** Inicia en 1 ***
+    createdAt?  : string;
 }
 
 /**

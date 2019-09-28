@@ -65,7 +65,8 @@ export class AppComponent {
             loader.present();
             try {
               await this.authService.logout();
-              this.router.navigate(['/']);
+              window.location.href = '/login';
+              // this.router.navigate(['/']);
             } catch (error) {
               console.log(error);
             } finally {

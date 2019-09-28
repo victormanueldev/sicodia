@@ -24,7 +24,7 @@ export class ClientsService {
   /**
    * Obtiene todos los clientes de la coleccion.
    */
-  getClients(): Observable<Client[]>{
+  getClients(idCompany: number): Observable<Client[]>{
 
     // Obtiene el estado actual de la coleccion seleccionada
     // como un Observable Doc. completa en:
@@ -34,7 +34,12 @@ export class ClientsService {
         return actions.map(action => {
           const data = action.payload.doc.data();
           const id = action.payload.doc.id;
-          return {id, ...data};
+          const idCompanyClient = data.idCompany;
+          if(idCompanyClient == idCompany){
+            return {id, ...data};
+          } else {
+            return null
+          }
         })
       })
     );
@@ -45,6 +50,7 @@ export class ClientsService {
   /**
    * Obtiene los datos del estado actual del cliente seleccionado.
    * @param id Nro. de cédula del cliente
+   * @param idCompany ID de la empresa
    */
   getClient(id: string): Observable<Client>{
     return this.clientsCollection.doc<Client>(id).valueChanges();

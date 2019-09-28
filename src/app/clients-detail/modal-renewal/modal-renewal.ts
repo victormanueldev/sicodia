@@ -52,7 +52,7 @@ export class ModalPage {
 
         const credit: Credit = {
             ...this.creditForm.value,
-            id: `${moment().format("YYYYMMDD")}-${this.navParams.get('id')}`,
+            id: `${moment().format("YYYYMMDDHHMMSS")}-${this.navParams.get('id')}`,
             idClient: this.navParams.get('id'),
             fullNameClient: this.navParams.get('fullName'),
             // Ganacia Total = (Valor Cuota * No. de cuotas) - Total de Crédito
@@ -76,12 +76,12 @@ export class ModalPage {
         }
 
         try {
-
-            await this.usersService.getUsers().subscribe(res => {
-                this.users = res;
+            const idCompany = Number( this.usersService.getStorageData("idCompany"))
+            await this.usersService.getUsers(idCompany).subscribe(res => {
+                this.users = res.filter(user => user != null);
                 this.users.map(async user => {
                     // Valida que el usuario sea administrados y diferente al usuario logueado
-                    if(user.role == 'admin' && user.id !== localStorage.getItem('uid')){
+                    if(user.role == 'admin' && user.id !== localStorage.getItem('uid') && user.idCompany == idCompany){
                         // Añade el token al objeto de notificacion
                         notification.to = user.token;
                         // Envia una notificacion por cada usuario que cumpla la condicion

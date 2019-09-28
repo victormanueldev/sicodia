@@ -35,6 +35,7 @@ export class HomePage implements OnInit {
   notPaidPercent: number = 0;
   chart: any = null;
   ctx: CanvasRenderingContext2D;
+  idCompany: number;
 
   constructor(
     private fcmService: FcmService,
@@ -99,32 +100,35 @@ export class HomePage implements OnInit {
 
   async ngOnInit() {
 
+    this.idCompany = Number(this.usersService.getStorageData('idCompany'))
+
     // Obtiene todos los usuarios del sistema y crea el array que 
     // Lleva la sumatoria de recaudos de cada uno
-    this.usersService.getUsers().subscribe(res => {
-      this.users = res;
+    this.usersService.getUsers(this.idCompany).subscribe(res => {
+      this.users = res.filter(user => user != null);
       this.users.forEach(user => {
-        this.dailyCollections.push({
-          id: user.id,
-          name: user.name,
-          role: user.role,
-          today: moment().tz("America/Bogota").format("YYYY-MM-DD"),
-          totalCollected: 0,
-          totalNotPaid: 0
-        })
-      })
+          this.dailyCollections.push({
+            id: user.id,
+            name: user.name,
+            role: user.role,
+            today: moment().tz("America/Bogota").format("YYYY-MM-DD"),
+            totalCollected: 0,
+            totalNotPaid: 0
+          });
+        
+      });
     });
 
     // Obtiene todos los creditos activos y calcula el monto total de 
     // Cuotas que se espera que los cobradores recauden
-    this.creditsService.getActiveCredits().subscribe(res => {
-      this.activeCredits = res;
+    this.creditsService.getActiveCredits(this.idCompany).subscribe(res => {
+      this.activeCredits = res.filter(credit => credit != null);
       this._calculateTotalExpected();
     });
 
     // Obtiene todos los recaudos de la base de datos
-    this.collectionsService.getCollections().subscribe(res => {
-      this._calculateCollectionsPayments(res);
+    this.collectionsService.getCollections(this.idCompany).subscribe(res => {
+      this._calculateCollectionsPayments(res.filter(collection => collection != null));
     });
 
     try {
@@ -171,8 +175,10 @@ export class HomePage implements OnInit {
     this.totalAmountPaid = 0;
     this.totalAmountNotPaid = 0;
     this.users.forEach((user, index) => {
-      this.dailyCollections[index].totalCollected = 0;
-      this.dailyCollections[index].totalNotPaid = 0;
+      if (this.dailyCollections[index]) {
+        this.dailyCollections[index].totalCollected = 0;
+        this.dailyCollections[index].totalNotPaid = 0;
+      }
     });
 
     this.collections = collections;
@@ -189,14 +195,17 @@ export class HomePage implements OnInit {
 
         // Acumulos montos recaudados de cada usuario
         this.users.forEach((user, index) => {
+          if (this.dailyCollections[index]) {
 
-          // Valida que el recaudos sea del usuario
-          if (user.id == collect.uid) {
+            // Valida que el recaudos sea del usuario
+            if (this.dailyCollections[index].id == collect.uid) {
 
-            // Acumula el total de las cutoas Pagadas y No pagadas
-            collect.paid ?
-              this.dailyCollections[index].totalCollected += collect.amountPaid :
-              this.dailyCollections[index].totalNotPaid += collect.amountPaid;
+              // Acumula el total de las cutoas Pagadas y No pagadas
+              collect.paid ?
+                this.dailyCollections[index].totalCollected += collect.amountPaid :
+                this.dailyCollections[index].totalNotPaid += collect.amountPaid;
+
+            }
 
           }
         })
@@ -221,7 +230,7 @@ export class HomePage implements OnInit {
     this._calculateCollectionsPayments(this.collections)
   }
 
-  async openModalDetailCollectios(collectorID: string): Promise<void>{
+  async openModalDetailCollectios(collectorID: string): Promise<void> {
     const modal = await this.modalCtrl.create({
       component: ModalCollectDetails,
       componentProps: { id: collectorID, dateSelected: this.now }

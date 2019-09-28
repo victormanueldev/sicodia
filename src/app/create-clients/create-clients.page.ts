@@ -7,6 +7,7 @@ import { Credit } from 'src/models/credit.model';
 import * as moment from 'moment-timezone';
 import { StaticFees } from './static-fees';
 import { UtilsService } from 'src/services/utils/utils.service';
+import { UsersService } from 'src/services/users/users.service';
 
 @Component({
   selector: 'app-create-clients',
@@ -22,8 +23,8 @@ export class CreateClientsPage implements OnInit {
 
   //Formulario de clientes
   mainForm = new FormGroup({
+    id: new FormControl(''),
     client: new FormGroup({
-      id: new FormControl(''),
       fullName: new FormControl(''),
       phone: new FormControl(''),
       mobile: new FormControl(''),
@@ -40,14 +41,17 @@ export class CreateClientsPage implements OnInit {
     })
   })
 
+  idCompany: number;
+
   constructor(
     private clientsService: ClientsService,
     private creditsService: CreditsService,
-    private utilsServie: UtilsService
+    private utilsServie: UtilsService,
+    private usersService: UsersService
   ) { }
 
   ngOnInit() {
-
+    this.idCompany = Number(this.usersService.getStorageData("idCompany"))
   }
 
   async createClient(): Promise<void> {
@@ -57,12 +61,14 @@ export class CreateClientsPage implements OnInit {
     //Datos a enviar
     const client: Client = {
       ...this.mainForm.value.client,
-      billingState: 'Al dia'
+      id: this.mainForm.value.id.toString(),
+      billingState: 'Al dia',
+      idCompany: this.idCompany
     }
 
     const credit: Credit = {
       ...this.mainForm.value.credit,
-      id: `${moment().format("YYYYMMDD")}-${client.id}`,
+      id: `${moment().format("YYYYMMDDHHMMSS")}-${client.id}`,
       idClient: client.id,
       fullNameClient: client.fullName,
       // Ganacia Total = (Valor Cuota * No. de cuotas) - Total de Crédito
@@ -74,7 +80,8 @@ export class CreateClientsPage implements OnInit {
       // Saldo = Valor Cuota * No. de cuotas
       balance: (this.mainForm.value.credit.feesTotalAmount * this.mainForm.value.credit.numberFees),
       createdAt: moment().tz("America/Bogota").format(),
-      acreditedAt: moment().tz("America/Bogota").format()
+      acreditedAt: moment().tz("America/Bogota").format(),
+      idCompany: this.idCompany
     }
 
     try {

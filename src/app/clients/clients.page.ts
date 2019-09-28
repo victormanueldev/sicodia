@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ClientsService } from 'src/services/clients/clients.service';
 import { Client } from 'src/models/client.model';
+import { UsersService } from 'src/services/users/users.service';
 
 @Component({
   selector: 'app-clients',
@@ -15,15 +16,16 @@ export class ClientsPage implements OnInit {
 
   constructor(
     private router: Router,
-    private clientsService: ClientsService
+    private clientsService: ClientsService,
+    private usersSerivice: UsersService
   ) { }
 
   ngOnInit() {
 
-    this.clientsService.getClients().subscribe(res => {
-      this.clients = res;
+    const idCompany = Number(this.usersSerivice.getStorageData('idCompany'));
+    this.clientsService.getClients(idCompany).subscribe(res => {
+      this.clients = res.filter(client => client != null);
       this.filteredClients = this.clients;
-      
     });
 
   }

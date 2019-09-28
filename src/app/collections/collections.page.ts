@@ -26,6 +26,7 @@ export class CollectionsPage implements OnInit {
   userData: User;
   fullNameClient: string;
   isHoliday: boolean = false;
+  idCompany: number;
 
   constructor(
     private clientsService: ClientsService,
@@ -41,15 +42,17 @@ export class CollectionsPage implements OnInit {
 
   ngOnInit() {
 
+    this.idCompany = Number(this.usersService.getStorageData("idCompany"));
+
     // Obtiene todos los clientes y los almacena en diferentes variables
-    this.clientsService.getClients().subscribe(res => {
-      this.clients = res;
+    this.clientsService.getClients(this.idCompany).subscribe(res => {
+      this.clients = res.filter(client => client != null );
       this.filteredClients = this.clients;
     });
 
     // Obtiene todos los créditos
-    this.creditsService.getCredits().subscribe(res => {
-      return res;
+    this.creditsService.getCredits(this.idCompany).subscribe(res => {
+      return res.filter(credit => credit != null);
     });
 
     // Obtiene la información del usuario
@@ -186,7 +189,7 @@ export class CollectionsPage implements OnInit {
    * @param paidFee Paga/No paga
    */
   private async _saveCollect(paidFee: boolean): Promise<void> {
-    const loader = await this.utilsService.presentLoader('Generando recibo...');
+    const loader = await this.utilsService.presentLoader('Registrando recaudo...');
     loader.present();
 
     try {
@@ -223,7 +226,8 @@ export class CollectionsPage implements OnInit {
         uid: this.userData.id,
         username: this.userData.name,
         idClient: this.idClient,
-        fullNameClient: this.fullNameClient
+        fullNameClient: this.fullNameClient,
+        idCompany: this.idCompany
       }
 
       await this.collectService.addCollection(collect);
@@ -234,7 +238,6 @@ export class CollectionsPage implements OnInit {
         'OK',
         true
       );
-
 
     } catch (error) {
       

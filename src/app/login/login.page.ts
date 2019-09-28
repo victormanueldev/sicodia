@@ -3,6 +3,8 @@ import { FormGroup, FormControl, Validators } from "@angular/forms";
 import { AuthService } from 'src/services/auth/auth.service';
 import { ToastController, LoadingController } from '@ionic/angular';
 import { Router } from '@angular/router';
+import { UsersService } from 'src/services/users/users.service';
+import { User } from 'src/models/user.model';
 
 @Component({
   selector: 'app-login',
@@ -22,7 +24,8 @@ export class LoginPage implements OnInit {
     private authService: AuthService,
     private toastCtrl: ToastController,
     private loaderCtrl: LoadingController,
-    private router: Router
+    private router: Router,
+    private userService: UsersService
   ) { }
 
   ngOnInit() {
@@ -47,10 +50,13 @@ export class LoginPage implements OnInit {
     loader.present();
 
     try {
-      const res = await this.authService.login(this.loginForm.value.email, this.loginForm.value.password);
-      localStorage.setItem("uid", res.user.uid);
-      
-      this.router.navigate(['/home']);
+      const resAuth = await this.authService.login(this.loginForm.value.email, this.loginForm.value.password);
+      let promise = this.userService.getUser(resAuth.user.uid).subscribe(res => {
+        localStorage.setItem("idCompany", res.idCompany.toString());
+        localStorage.setItem("uid", resAuth.user.uid);
+        promise.unsubscribe();
+        this.router.navigate(['/home']);
+      });
     } catch (error) {
       // Valida el tipo de error
       switch (error.code) {

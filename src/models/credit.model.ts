@@ -2,7 +2,7 @@
  * Créditos
  */
 export interface Credit {
-    id?                  : string;   // {ANIOMESDIA - ID CLIENTE} 
+    id?                  : string;   // {ANIOMESDIAHORAMINSEG - ID CLIENTE} 
     totalAmount?         : number;   // Monto total del crédito
     feesTotalAmount?     : number;   // Valor total de la cuota
     numberFees?          : number;   // Numero total de cutoas
@@ -17,4 +17,5 @@ export interface Credit {
     acreditedAt?         : string;   // Fecha de acreditacion
     idClient?            : string;   // Nro. de cédula del cliente
     fullNameClient?      : string;   // Nombre completo del cliente
+    idCompany?           : number;   // ID de la empresa de cobros
 }
