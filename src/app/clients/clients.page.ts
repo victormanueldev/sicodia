@@ -35,7 +35,7 @@ export class ClientsPage implements OnInit {
   }
 
   filterClients(filterValue: string): void {
-    this.clients = this.filteredClients.filter(client => client.id.toString().toLowerCase().indexOf(filterValue.toLowerCase()) > -1);
+    this.clients = this.filteredClients.filter(client => client.fullName.toLowerCase().indexOf(filterValue.toLowerCase()) > -1);
   }
 
   toDetails(idClient: string): void {
