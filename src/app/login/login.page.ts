@@ -53,6 +53,7 @@ export class LoginPage implements OnInit {
       const resAuth = await this.authService.login(this.loginForm.value.email, this.loginForm.value.password);
       let promise = this.userService.getUser(resAuth.user.uid).subscribe(res => {
         localStorage.setItem("idCompany", res.idCompany.toString());
+        localStorage.setItem('role', res.role);
         localStorage.setItem("uid", resAuth.user.uid);
         promise.unsubscribe();
         this.router.navigate(['/home']);

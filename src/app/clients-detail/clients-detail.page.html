@@ -68,6 +68,18 @@
     </ion-card-content>
   </ion-card>
 
+  <ion-list *ngIf="renewal">
+    <ion-item detail (click)="openModalDetailRenewal()">
+      <ion-label text-wrap>
+        <ion-text>
+          <h2>Nueva solicitud de crédito</h2>
+        </ion-text>
+        <p>Total: $ {{ renewal.totalAmount.toLocaleString('DE') }}</p>
+      </ion-label>
+      <ion-icon name="alert" color="danger" slot="end"></ion-icon>
+    </ion-item>
+  </ion-list>
+
 
   <ion-list>
     <ion-list-header>
@@ -199,13 +211,13 @@
       </ion-card-content>
     </ion-card>
 
-    <!-- <ion-card>
+    <ion-card *ngIf="!renewal">
       <ion-item>
         <ion-icon name="swap" slot="start"></ion-icon>
         <ion-label>Nuevo crédito</ion-label>
         <ion-button fill="outline" slot="end" (click)="openRenewalModal()">Solicitar</ion-button>
       </ion-item>
-    </ion-card> -->
+    </ion-card>
 
     <ion-item *ngIf="activeCreditEmpty === true">
       <ion-label text-wrap>

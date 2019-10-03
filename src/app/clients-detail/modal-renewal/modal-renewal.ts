@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ModalController, NavParams, LoadingController } from '@ionic/angular';
+import { ModalController, NavParams } from '@ionic/angular';
 import { FormGroup, FormControl } from '@angular/forms';
 import { StaticFees } from 'src/app/create-clients/static-fees';
 import { Credit } from 'src/models/credit.model';
@@ -10,6 +10,8 @@ import { Notification } from 'src/models/notification.model';
 import { UsersService } from 'src/services/users/users.service';
 import { User } from 'src/models/user.model';
 import { FcmService } from 'src/services/fcm/fcm.service';
+import { RenewalsService } from 'src/services/renewals/renewals.service';
+import { Renewal } from 'src/models/renewal.model';
 
 @Component({
     selector: 'modal-renewal',
@@ -37,7 +39,8 @@ export class ModalPage {
         private creditsService: CreditsService,
         private utilsService: UtilsService,
         private usersService: UsersService,
-        private fcm: FcmService
+        private fcm: FcmService,
+        private renewalsService: RenewalsService
     ) { }
 
     dismissModal() {
@@ -50,21 +53,18 @@ export class ModalPage {
         const loader = await this.utilsService.presentLoader('Enviando solicitud...');
         loader.present();
 
-        const credit: Credit = {
+        const idCompany = Number(this.usersService.getStorageData("idCompany"))
+
+        const renewal: Renewal = {
+            id: moment().tz('America/Bogota').format('YYYYMMDDHHmmss') + 'RN' + this.navParams.get('id'),
             ...this.creditForm.value,
-            id: `${moment().format("YYYYMMDDHHMMSS")}-${this.navParams.get('id')}`,
+            requestDate: moment().tz('America/Bogota').format('YYYY-MM-DD HH:mm:ss'),
             idClient: this.navParams.get('id'),
-            fullNameClient: this.navParams.get('fullName'),
-            // Ganacia Total = (Valor Cuota * No. de cuotas) - Total de Crédito
-            profitTotal: (this.creditForm.value.feesTotalAmount * this.creditForm.value.numberFees) - this.creditForm.value.totalAmount,
+            requestUid: this.usersService.getStorageData("uid"),
             state: 'Pendiente',
-            feesPaid: 0,
-            feesNotPaid: 0,
-            outstandingFees: this.creditForm.value.numberFees,
-            balance: (this.creditForm.value.feesTotalAmount * this.creditForm.value.numberFees),
-            createdAt: moment().tz("America/Bogota").format(),
+            idCompany
         }
-        
+
         const notification: Notification = {
             notification: {
                 title: 'Nueva solicitud de crédito',
@@ -76,12 +76,12 @@ export class ModalPage {
         }
 
         try {
-            const idCompany = Number( this.usersService.getStorageData("idCompany"))
+
             await this.usersService.getUsers(idCompany).subscribe(res => {
                 this.users = res.filter(user => user != null);
                 this.users.map(async user => {
                     // Valida que el usuario sea administrados y diferente al usuario logueado
-                    if(user.role == 'admin' && user.id !== localStorage.getItem('uid') && user.idCompany == idCompany){
+                    if (user.role == 'admin' && user.id !== localStorage.getItem('uid') && user.idCompany == idCompany) {
                         // Añade el token al objeto de notificacion
                         notification.to = user.token;
                         // Envia una notificacion por cada usuario que cumpla la condicion
@@ -90,7 +90,7 @@ export class ModalPage {
                 });
             });
 
-            await this.creditsService.addCredit(credit);
+            await this.renewalsService.addRenewal(renewal);
 
             this.utilsService.presentToast(
                 'Solicitud enviada',
@@ -100,7 +100,7 @@ export class ModalPage {
             );
 
         } catch (error) {
-            this.utilsService.presentAlert("Error","Error inesperado", error, [ { text: 'OK' }], '');
+            this.utilsService.presentAlert("Error", "Error inesperado", error, [{ text: 'OK' }], '');
         } finally {
             loader.dismiss();
         }

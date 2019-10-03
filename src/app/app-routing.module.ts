@@ -15,7 +15,8 @@ const routes: Routes = [
   { path: 'clients', loadChildren: './clients/clients.module#ClientsPageModule' },
   { path: 'create-clients', loadChildren: './create-clients/create-clients.module#CreateClientsPageModule' },
   { path: 'collections', loadChildren: './collections/collections.module#CollectionsPageModule' },
-  { path: 'clients-detail/:id', loadChildren: './clients-detail/clients-detail.module#ClientsDetailPageModule' }
+  { path: 'clients-detail/:id', loadChildren: './clients-detail/clients-detail.module#ClientsDetailPageModule' },
+
 
 
 ];

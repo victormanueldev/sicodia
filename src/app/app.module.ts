@@ -21,12 +21,15 @@ import { ModalPage } from './clients-detail/modal-renewal/modal-renewal';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { ModalCollectDetails } from './home/modal-collect-detail/modal-collect-details';
+import { RenewalsService } from 'src/services/renewals/renewals.service';
+import { ModalDetailRenewal } from './clients-detail/modal-detail-renewal/modal-detail-renewal';
 
 @NgModule({
-  declarations: [AppComponent, ModalPage, ModalCollectDetails],
+  declarations: [AppComponent, ModalPage, ModalCollectDetails, ModalDetailRenewal],
   entryComponents: [
     ModalPage,
-    ModalCollectDetails
+    ModalCollectDetails,
+    ModalDetailRenewal
   ],
   imports: [
     BrowserModule,
@@ -45,6 +48,7 @@ import { ModalCollectDetails } from './home/modal-collect-detail/modal-collect-d
     ClientsService,
     CreditsService,
     AuthService,
+    RenewalsService,
     FCM
   ],
   bootstrap: [AppComponent]
