@@ -9,7 +9,7 @@
 
 <ion-content>
   <!-- Searchbar with cancel button shown on focus -->
-  <ion-searchbar placeholder="Buscar por cédula..." showCancelButton="focus"
+  <ion-searchbar placeholder="Buscar por nombre..." showCancelButton="focus"
     (ionInput)="filterClients($event.target.value)"></ion-searchbar>
 
   <!-- Loader -->
@@ -25,11 +25,11 @@
         <ion-icon name="contact" slot="start"></ion-icon>
         <ion-label text-wrap>
           <ion-text>
-            <h3>{{ client.fullName }}</h3>
+            <h3>{{ client.fullNameClient }}</h3>
           </ion-text>
-          <p><b>C.C. </b>{{ client.id }}</p>
+          <p><b>C.C. </b>{{ client.idClient }} <b>{{ client.numberFees < 25 ? 'Semanal' : 'Diario'  }}</b></p>
         </ion-label>
-        <ion-button fill="outline" slot="end" (click)="collect(client.id, client.fullName)">Cobrar</ion-button>
+        <ion-button fill="outline" slot="end" (click)="collect(client.idClient, client.fullNameClient)">Cobrar</ion-button>
       </ion-item>
     </ion-card>
   </ion-list>

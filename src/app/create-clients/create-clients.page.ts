@@ -68,7 +68,7 @@ export class CreateClientsPage implements OnInit {
 
     const credit: Credit = {
       ...this.mainForm.value.credit,
-      id: `${moment().format("YYYYMMDDHHMMSS")}-${client.id}`,
+      id: `${moment().format("YYYYMMDDHHmmss")}-${client.id}`,
       idClient: client.id,
       fullNameClient: client.fullName,
       // Ganacia Total = (Valor Cuota * No. de cuotas) - Total de Crédito
