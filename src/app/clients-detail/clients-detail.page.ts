@@ -74,8 +74,9 @@ export class ClientsDetailPage implements OnInit {
       // Valida la primera renovacion con estado pendiente del cliente
       // Que el usuario que la solicitó no sea el mismo que la aprueba
       // Que el rol autorizado para realizar la aprobacion es el administrador
-      // if(res[0].state == 'Pendiente' && res[0].requestUid != uid && role == 'admin'){
-      this.renewal = res.filter(renewal => renewal.state == 'Pendiente')[0];
+      if(role == 'admin'){ 
+        this.renewal = res.filter(renewal => renewal.state == 'Pendiente' && renewal.requestUid != uid)[0];
+      }
     });
   }
 

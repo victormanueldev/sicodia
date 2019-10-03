@@ -19,8 +19,8 @@ import { UsersService } from 'src/services/users/users.service';
 })
 export class CollectionsPage implements OnInit {
 
-  clients: Client[];
-  filteredClients: Client[];
+  clients: Credit[];
+  filteredClients: Credit[];
   credit: Credit[];
   idClient: string;
   userData: User;
@@ -36,7 +36,7 @@ export class CollectionsPage implements OnInit {
     private usersService: UsersService
   ) { }
 
-  ionViewDidEnter(){
+  ionViewDidEnter() {
     this._verifyHolidayOrSunday();
   }
 
@@ -45,14 +45,15 @@ export class CollectionsPage implements OnInit {
     this.idCompany = Number(this.usersService.getStorageData("idCompany"));
 
     // Obtiene todos los clientes y los almacena en diferentes variables
-    this.clientsService.getClients(this.idCompany).subscribe(res => {
-      this.clients = res.filter(client => client != null );
-      this.filteredClients = this.clients;
-    });
+    // this.clientsService.getClients(this.idCompany).subscribe(res => {
+    //   this.clients = res.filter(client => client != null );
+    //   this.filteredClients = this.clients;
+    // });
 
     // Obtiene todos los créditos
     this.creditsService.getCredits(this.idCompany).subscribe(res => {
-      return res.filter(credit => credit != null);
+      this.clients = res.filter(client => client != null && client.state == 'Acreditado');
+      this.filteredClients = this.clients;
     });
 
     // Obtiene la información del usuario
@@ -70,13 +71,13 @@ export class CollectionsPage implements OnInit {
     const holidays = ColombiaHolidays.getColombiaHolidaysByYear(moment().tz("America/Bogota").year())
 
     //Valida si es domingo
-    if(moment().tz("America/Bogota").day() === 0){
+    if (moment().tz("America/Bogota").day() === 0) {
       this.isHoliday = true;
     }
 
     // Valida si es festivo
     holidays.forEach(celebrationDay => {
-      if(moment(celebrationDay.holiday, "YYYY-MM-DD").format("YYYY-MM-DD") == moment().tz("America/Bogota").format("YYYY-MM-DD")){
+      if (moment(celebrationDay.holiday, "YYYY-MM-DD").format("YYYY-MM-DD") == moment().tz("America/Bogota").format("YYYY-MM-DD")) {
         this.isHoliday = true;
       }
     });
@@ -84,12 +85,12 @@ export class CollectionsPage implements OnInit {
   }
 
   filterClients(filterValue: string): void {
-    this.clients = this.filteredClients.filter(client => client.fullName.toLowerCase().indexOf(filterValue.toLowerCase()) > -1);
+    this.clients = this.filteredClients.filter(client => client.fullNameClient.toLowerCase().indexOf(filterValue.toLowerCase()) > -1);
   }
 
   async collect(idClient: string, fullNameClient: string): Promise<void> {
 
-    if(this.isHoliday){
+    if (this.isHoliday) {
       this.utilsService.presentToast(
         'No es posible hacer recaudos hoy',
         8000,
@@ -112,9 +113,9 @@ export class CollectionsPage implements OnInit {
           throw "Ha ocurrido un error...";
         }
 
-        this.credit = res;
+        this.credit = res.filter(credit => credit.state == 'Acreditado');
 
-        if(this.credit[0].balance == 0 && this.credit[0].state == 'Pagado') {
+        if (this.credit[0].balance == 0 && this.credit[0].state == 'Pagado') {
           this.utilsService.presentToast(
             'Este cliente no tiene créditos activos',
             8000,
@@ -204,12 +205,12 @@ export class CollectionsPage implements OnInit {
         }
 
         // Valida que el credito fue pagado
-        if(data.balance == 0) {
+        if (data.balance == 0) {
           data.state = 'Pagado'
         } else {
           data.state = 'Acreditado'
         }
-        
+
         await this.creditsService.updateCredit(this.credit[0].id, data);
       } else {
 
@@ -219,7 +220,7 @@ export class CollectionsPage implements OnInit {
       }
 
       const collect: Collection = {
-        id: `${moment().format("YYYYMMDDSS")}-${this.credit[0].id}`,
+        id: `${moment().format("YYYYMMDDHHmmss")}-${this.credit[0].id}`,
         createdAt: moment().tz('America/Bogota').format(),
         paid: paidFee,
         amountPaid: this.credit[0].feesTotalAmount,
@@ -240,7 +241,7 @@ export class CollectionsPage implements OnInit {
       );
 
     } catch (error) {
-      
+
       this.utilsService.presentToast(
         'Error al guardar la información',
         4000,

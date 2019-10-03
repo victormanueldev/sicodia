@@ -27,6 +27,11 @@ export class AppComponent {
       title: 'Recaudos',
       url: '/collections',
       icon: 'cash'
+    },
+    {
+      title: 'Informes',
+      url: '/analytics',
+      icon: 'analytics'
     }
 
   ];

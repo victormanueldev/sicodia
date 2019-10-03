@@ -54,6 +54,7 @@ export class ModalPage {
         loader.present();
 
         const idCompany = Number(this.usersService.getStorageData("idCompany"))
+        const fullNameClient = this.navParams.get('fullName');
 
         const renewal: Renewal = {
             id: moment().tz('America/Bogota').format('YYYYMMDDHHmmss') + 'RN' + this.navParams.get('id'),
@@ -68,7 +69,7 @@ export class ModalPage {
         const notification: Notification = {
             notification: {
                 title: 'Nueva solicitud de crédito',
-                body: 'Se ha recibido una nueva solicitud de aprobación de crédito. Toca para ver más',
+                body: `Se ha recibido una nueva solicitud de aprobación de crédito para ${fullNameClient}`,
                 icon: 'myicon',
                 sound: 'default'
             },

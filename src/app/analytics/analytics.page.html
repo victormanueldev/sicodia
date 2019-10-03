@@ -1,0 +1,59 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Informes</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-list-header>
+      <ion-label>Selecciona el rango de fechas</ion-label>
+    </ion-list-header>
+
+    <ion-item>
+      <ion-label>Fecha inicial</ion-label>
+      <ion-datetime display-format="MMM DD, YYYY" pickerFormat="YYYY MMM DD"
+        [pickerOptions]="customPickerOptionsInitial"
+        monthShortNames="Ene, Feb, Mar, Abr, May, Jun, Jul, Ago, Sep, Oct, Nov, Dic" [(ngModel)]="initialDate">
+      </ion-datetime>
+    </ion-item>
+    <ion-item>
+      <ion-label>Fecha final</ion-label>
+      <ion-datetime display-format="MMM DD, YYYY" pickerFormat="YYYY MMM DD" [pickerOptions]="customPickerOptionsFinal"
+        monthShortNames="Ene, Feb, Mar, Abr, May, Jun, Jul, Ago, Sep, Oct, Nov, Dic" [(ngModel)]="finalDate">
+      </ion-datetime>
+    </ion-item>
+  </ion-list>
+
+  <!-- Informacion del recaudo -->
+  <ion-card >
+
+    <ion-item>
+      <ion-icon name="analytics" slot="start"></ion-icon>
+      <ion-label text-wrap>
+        <ion-text>
+          <h2>Reporte de ganancias</h2>
+        </ion-text>
+      </ion-label>
+    </ion-item>
+
+    <ion-card-content>
+
+      <ion-item>
+        <ion-icon name="cash" slot="start"></ion-icon>
+        <p>Total acreditado</p>
+        <ion-text slot="end">$ {{ totalAcredited.toLocaleString('DE-de') }}</ion-text>
+      </ion-item>
+
+      <ion-item>
+          <ion-icon name="trending-up" slot="start"></ion-icon>
+        <p>Ganancias totales</p>
+        <ion-text slot="end" color="success">$ {{ totalProfit.toLocaleString('DE-de') }}</ion-text>
+      </ion-item>
+
+    </ion-card-content>
+  </ion-card>
+</ion-content>
