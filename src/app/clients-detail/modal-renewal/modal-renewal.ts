@@ -80,7 +80,7 @@ export class ModalPage {
 
             await this.usersService.getUsers(idCompany).subscribe(res => {
                 this.users = res.filter(user => user != null);
-                this.users.map(async user => {
+                this.users.forEach(async user => {
                     // Valida que el usuario sea administrados y diferente al usuario logueado
                     if (user.role == 'admin' && user.id !== localStorage.getItem('uid') && user.idCompany == idCompany) {
                         // Añade el token al objeto de notificacion
