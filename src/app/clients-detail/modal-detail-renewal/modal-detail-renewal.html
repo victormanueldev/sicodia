@@ -79,6 +79,32 @@
                         </ion-label>
                     </ion-col>
                 </ion-row>
+
+                <ion-row>
+                    <ion-col size="7">
+                        <ion-label text-wrap>
+                            <strong>Saldo pendiente:</strong>
+                        </ion-label>
+                    </ion-col>
+                    <ion-col size="5" class="align-end">
+                        <ion-label color="danger">
+                            <p>{{ activeCredit ? activeCredit.balance.toLocaleString('DE-de') : 0}}</p>
+                        </ion-label>
+                    </ion-col>
+                </ion-row>
+
+                <ion-row>
+                        <ion-col size="7">
+                            <ion-label text-wrap>
+                                <strong>Monto a entregar :</strong>
+                            </ion-label>
+                        </ion-col>
+                        <ion-col size="5" class="align-end">
+                            <ion-label color="success">
+                                <p>{{ totalAmountToCredit.toLocaleString('DE-de') }}</p>
+                            </ion-label>
+                        </ion-col>
+                    </ion-row>
             </ion-grid>
         </ion-card-content>
     </ion-card>
@@ -86,10 +112,12 @@
     <ion-grid>
         <ion-row>
             <ion-col size="6">
-                <ion-button expand="block" color="primary" (click)="renewalApproved('Aprobado')">Aprobar</ion-button>
+                <ion-button expand="block" color="primary" (click)="renewalApproved('Aprobado')"
+                    [disabled]="activateButton">Aprobar</ion-button>
             </ion-col>
             <ion-col size="6">
-                <ion-button expand="block" color="danger" (click)="renewalApproved('No aprobado')">No aprobar</ion-button>
+                <ion-button expand="block" color="danger" (click)="renewalApproved('No aprobado')">No aprobar
+                </ion-button>
             </ion-col>
         </ion-row>
     </ion-grid>
