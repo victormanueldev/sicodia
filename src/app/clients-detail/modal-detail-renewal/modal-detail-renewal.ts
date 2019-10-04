@@ -47,7 +47,7 @@ export class ModalDetailRenewal implements OnInit {
 
         this.creditsService.getCredit(this.navParams.get('idActiveCredit')).subscribe(res => {
             this.activeCredit = res;
-            this.totalAmountToCredit = (this.renewal.feesTotalAmount * this.renewal.numberFees) - this.activeCredit.balance;
+            this.totalAmountToCredit = Number(this.renewal.totalAmount) - this.activeCredit.balance;
             this.activateButton = false;
         });
     }
@@ -93,7 +93,6 @@ export class ModalDetailRenewal implements OnInit {
                     idCompany: Number(this.usersService.getStorageData('idCompany'))
                 }
 
-                console.log(this.activeCredit.outstandingFees);
 
                 for (let index = 0; index < this.activeCredit.outstandingFees; index++) {
                     let collect: Collection = {
@@ -107,7 +106,6 @@ export class ModalDetailRenewal implements OnInit {
                         fullNameClient: this.navParams.get('fullNameClient'),
                         idCompany: this.userData.idCompany
                     }
-                    console.log(collect.id)
 
                     await this.collectionsService.addCollection(collect)
                 }
