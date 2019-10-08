@@ -94,7 +94,7 @@ export class ClientsDetailPage implements OnInit {
       component: ModalDetailRenewal,
       componentProps: {
         id: this.renewal.id,
-        idActiveCredit: this.activeCredit.id,
+        idActiveCredit: this.activeCredit ? this.activeCredit.id : 'none',
         idClient: this.clientId,
         fullNameClient: this.client.fullName
       }

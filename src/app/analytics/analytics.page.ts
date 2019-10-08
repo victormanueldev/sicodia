@@ -74,7 +74,7 @@ export class AnalyticsPage implements OnInit {
 
         this.activeCredits.forEach(credit => {
           if(moment(credit.acreditedAt) >= moment(this.initialDate) && moment(credit.acreditedAt) <= moment(this.finalDate) && credit.state == 'Acreditado'){
-            this.totalAcredited += Number(credit.totalAmount);
+            this.totalAcredited += Number(credit.balance);
             this.totalProfit += credit.profitTotal;
           }
         })

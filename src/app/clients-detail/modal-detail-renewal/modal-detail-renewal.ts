@@ -35,6 +35,21 @@ export class ModalDetailRenewal implements OnInit {
     ) { }
 
     async ngOnInit() {
+
+        if (this.navParams.get('idActiveCredit') === 'none') {
+            this.activeCredit = {
+                balance: 0,
+                feesTotalAmount: 0,
+                outstandingFees: 0,
+                id: 'NC'
+            }
+        } else {
+            this.creditsService.getCredit(this.navParams.get('idActiveCredit')).subscribe(res => {
+                this.activeCredit = res;
+                this.activateButton = false;
+            });
+        }
+
         this.userData = {
             id: this.usersService.getStorageData('uid'),
             idCompany: Number(this.usersService.getStorageData('idCompany')),
@@ -43,13 +58,13 @@ export class ModalDetailRenewal implements OnInit {
         this.renewalsService.getRenewal(this.navParams.get('id')).subscribe(res => {
             this.renewal = res;
             this.loaderRenewal = false;
+            if(this.activeCredit.balance === 0) {
+                    this.totalAmountToCredit = (this.renewal.feesTotalAmount * this.renewal.numberFees) - this.activeCredit.balance;    
+            }
+            this.totalAmountToCredit = (this.renewal.feesTotalAmount * this.renewal.numberFees) - this.activeCredit.balance;
         });
 
-        this.creditsService.getCredit(this.navParams.get('idActiveCredit')).subscribe(res => {
-            this.activeCredit = res;
-            this.totalAmountToCredit = (this.renewal.feesTotalAmount * this.renewal.numberFees) - this.activeCredit.balance;
-            this.activateButton = false;
-        });
+
     }
 
     dismissModal(): void {
@@ -93,8 +108,6 @@ export class ModalDetailRenewal implements OnInit {
                     idCompany: Number(this.usersService.getStorageData('idCompany'))
                 }
 
-                console.log(this.activeCredit.outstandingFees);
-
                 for (let index = 0; index < this.activeCredit.outstandingFees; index++) {
                     let collect: Collection = {
                         id: `${moment().format("YYYYMMDDHHmmss")}-${this.activeCredit.id}-${index}`,
@@ -107,7 +120,6 @@ export class ModalDetailRenewal implements OnInit {
                         fullNameClient: this.navParams.get('fullNameClient'),
                         idCompany: this.userData.idCompany
                     }
-                    console.log(collect.id)
 
                     await this.collectionsService.addCollection(collect)
                 }
