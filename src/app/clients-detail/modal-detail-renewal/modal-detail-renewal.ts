@@ -43,6 +43,7 @@ export class ModalDetailRenewal implements OnInit {
                 outstandingFees: 0,
                 id: 'NC'
             }
+            this.activateButton = false;
         } else {
             this.creditsService.getCredit(this.navParams.get('idActiveCredit')).subscribe(res => {
                 this.activeCredit = res;
@@ -59,11 +60,11 @@ export class ModalDetailRenewal implements OnInit {
             this.renewal = res;
             this.loaderRenewal = false;
             if(this.activeCredit.balance === 0) {
-                    this.totalAmountToCredit = (this.renewal.feesTotalAmount * this.renewal.numberFees) - this.activeCredit.balance;    
+                    this.totalAmountToCredit = Number(this.renewal.totalAmount);
+            } else {
+                this.totalAmountToCredit = Number(this.renewal.totalAmount) - this.activeCredit.balance;
             }
-            this.totalAmountToCredit = (this.renewal.feesTotalAmount * this.renewal.numberFees) - this.activeCredit.balance;
         });
-
 
     }
 
@@ -124,18 +125,22 @@ export class ModalDetailRenewal implements OnInit {
                     await this.collectionsService.addCollection(collect)
                 }
 
-                await this.creditsService.updateCredit(this.navParams.get('idActiveCredit'), {
-                    balance: 0,
-                    outstandingFees: 0,
-                    feesPaid: this.activeCredit.outstandingFees,
-                    state: 'Pagado'
-                });
+                if(this.navParams.get('idActiveCredit') != 'none') {
+                    await this.creditsService.updateCredit(this.navParams.get('idActiveCredit'), {
+                        balance: 0,
+                        outstandingFees: 0,
+                        feesPaid: this.activeCredit.outstandingFees,
+                        state: 'Pagado'
+                    });
+                }
 
                 await this.creditsService.addCredit(credit);
 
             }
 
         } catch (error) {
+            console.log(error);
+            
             this.utils.presentToast(
                 'Ha ocurrido un error inesperado',
                 6000,
