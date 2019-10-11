@@ -139,7 +139,7 @@ export class CollectionsPage implements OnInit {
           fullNameClient,
           idClient,
           messageAlert,
-          this._buttonActions()
+          this._buttonActions(this.credit[0].feesTotalAmount)
         );
 
       } catch (error) {
@@ -160,7 +160,7 @@ export class CollectionsPage implements OnInit {
 
   }
 
-  private _buttonActions(): AlertButton[] {
+  private _buttonActions(feesTotalAmount: number): AlertButton[] {
     return [
       // Boton Cancelar
       {
@@ -171,18 +171,42 @@ export class CollectionsPage implements OnInit {
       {
         text: 'No paga',
         handler: () => {
-          this._saveCollect(false);
+          this._submitAlert(false, feesTotalAmount);
         }
       },
       // Boton PAGO
       {
         text: 'Paga',
         handler: () => {
-          this._saveCollect(true);
+          this._submitAlert(true, feesTotalAmount);
         }
       }
 
     ]
+  }
+
+  private _submitAlert(paidFee: boolean, feesTotalAmount): void {
+    this.utilsService.presentAlert(
+      'Advertencia',
+      '¿Está seguro de realizar esta acción?',
+      `Registrar ${paidFee 
+        ? `pago de la cuota de ${this.fullNameClient} por $ ${feesTotalAmount.toLocaleString('DE-de')}` 
+        : `no pago de la cuota de ${this.fullNameClient}`} `,
+      [
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+          cssClass: 'default'
+        },
+        {
+          text: 'Aceptar',
+          handler: () => {
+            this._saveCollect(paidFee);
+          }
+        }
+      ]
+    );
+
   }
 
   /**
@@ -190,6 +214,7 @@ export class CollectionsPage implements OnInit {
    * @param paidFee Paga/No paga
    */
   private async _saveCollect(paidFee: boolean): Promise<void> {
+
     const loader = await this.utilsService.presentLoader('Registrando recaudo...');
     loader.present();
 

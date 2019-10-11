@@ -69,7 +69,7 @@ export class AnalyticsPage implements OnInit {
         true
       )
     } else {
-      const promise = this.creditsService.getCredits(0).subscribe(res => {
+      const promise = this.creditsService.getCredits(this.idCompany).subscribe(res => {
         
         this.totalAcredited = 0;
         this.totalProfit = 0;
@@ -83,7 +83,7 @@ export class AnalyticsPage implements OnInit {
           }
         })
 
-        this.collectsService.getCollections(0).subscribe(res => {
+        this.collectsService.getCollections(this.idCompany).subscribe(res => {
           let collections = res.filter(res => res != null);
 
           collections.forEach(collect => {
