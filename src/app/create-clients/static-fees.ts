@@ -226,7 +226,7 @@ export const StaticFees: Array<any> = [
         availableFees: [
             { duration: "25 Dias", totalFee: 50000, numberFees: 25 },
             { duration: "32 Días", totalFee: 40000, numberFees: 32 },
-            { duration: "45 Días", totalFee: 30000, numberFees: 45 },
+            { duration: "45 Días", totalFee: 31000, numberFees: 45 },
             { duration: "60 Días", totalFee: 25000, numberFees: 60 },
             { duration: "4 Semanas", totalFee: 312500, numberFees: 4 },
             { duration: "5 Semanas", totalFee: 262000, numberFees: 5 },
