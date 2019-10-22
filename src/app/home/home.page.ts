@@ -36,6 +36,7 @@ export class HomePage implements OnInit {
   chart: any = null;
   ctx: CanvasRenderingContext2D;
   idCompany: number;
+  totalPay: number = 0;
 
   constructor(
     private fcmService: FcmService,
@@ -130,6 +131,16 @@ export class HomePage implements OnInit {
     this.collectionsService.getCollections(this.idCompany).subscribe(res => {
       this._calculateCollectionsPayments(res.filter(collection => collection != null));
     });
+
+    // this.collectionsService.getBillingState(this.idCompany).subscribe(res => {
+    //   const allCollects = res.filter(colection => colection !== null);
+    //   allCollects.forEach(collect => {
+    //     this.totalPay += 300;
+    //   });
+
+    //   console.log(allCollects.length);
+      
+    // })
 
     try {
       await this.fcmService.getTokenDevice();

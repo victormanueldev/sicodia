@@ -56,4 +56,8 @@ export class CollectionsService {
   removeCollection(idCollecion: string): Promise<void> {
     return this.collectsCollections.doc<Collection>(idCollecion).delete();
   }
+
+  getBillingState(idCompany: number): Observable<Collection[]> {
+    return this.afs.collection<Collection>('recaudos', ref => ref.where('idCompany', '==', idCompany).where('paid', '==', true)).valueChanges();
+  }
 }
