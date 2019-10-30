@@ -233,5 +233,11 @@ export const StaticFees: Array<any> = [
             { duration: "6 Semanas", totalFee: 203000, numberFees: 6 },
             { duration: "8 Semanas", totalFee: 187500, numberFees: 8 },
         ]
+    },
+    {
+        totalAmount: 1200000,
+        availableFees: [
+            { duration: "45 Días", totalFee: 36000, numberFees: 45 }
+        ]
     }
 ]

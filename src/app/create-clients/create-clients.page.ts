@@ -3,7 +3,7 @@ import { FormGroup, FormControl } from '@angular/forms';
 import { ClientsService } from 'src/services/clients/clients.service';
 import { CreditsService } from 'src/services/credits/credits.service';
 import { Client } from 'src/models/client.model';
-import { Credit } from 'src/models/credit.model';
+import { Credit, PaymentForecast } from 'src/models/credit.model';
 import * as moment from 'moment-timezone';
 import { StaticFees } from './static-fees';
 import { UtilsService } from 'src/services/utils/utils.service';
@@ -42,6 +42,7 @@ export class CreateClientsPage implements OnInit {
   })
 
   idCompany: number;
+  paymentsForecast: PaymentForecast[] = [];
 
   constructor(
     private clientsService: ClientsService,
@@ -66,6 +67,18 @@ export class CreateClientsPage implements OnInit {
       idCompany: this.idCompany
     }
 
+    // Valida si el crédito es semanal
+    if(this.mainForm.value.credit.numberFees < 25) {
+      let auxDate = moment().tz('America/Bogota');
+      for (let index = 0; index < this.mainForm.value.credit.numberFees; index++) {
+        this.paymentsForecast[index] = {
+          date: auxDate.add(7, 'days').format('YYYY-MM-DD'),
+          expectedAmount: this.mainForm.value.credit.feesTotalAmount,
+          paid: false
+        }
+      }
+    }
+
     const credit: Credit = {
       ...this.mainForm.value.credit,
       id: `${moment().format("YYYYMMDDHHmmss")}-${client.id}`,
@@ -81,7 +94,8 @@ export class CreateClientsPage implements OnInit {
       balance: (this.mainForm.value.credit.feesTotalAmount * this.mainForm.value.credit.numberFees),
       createdAt: moment().tz("America/Bogota").format(),
       acreditedAt: moment().tz("America/Bogota").format(),
-      idCompany: this.idCompany
+      idCompany: this.idCompany,
+      paymentsForecast: this.paymentsForecast
     }
 
     try {

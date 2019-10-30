@@ -18,4 +18,15 @@ export interface Credit {
     idClient?            : string;   // Nro. de cédula del cliente
     fullNameClient?      : string;   // Nombre completo del cliente
     idCompany?           : number;   // ID de la empresa de cobros
+    paymentsForecast?    : PaymentForecast[];
+    feesToPay?           : number;   // Cuotas a pagar, segun calculo de proyeccion y cuotas no pagadas
+}
+
+/**
+ * Proyección de pagos
+ */
+export interface PaymentForecast {
+    date                : string;   // Fecha proyectada
+    expectedAmount      : number;   // Monto esperado
+    paid                : boolean;  // Pago o No Pago
 }

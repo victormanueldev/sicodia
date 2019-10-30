@@ -88,7 +88,6 @@ export class AnalyticsPage implements OnInit {
 
           collections.forEach(collect => {
             if(moment(collect.createdAt) >= moment(this.initialDate) && moment(collect.createdAt) <= moment(this.finalDate)) {
-              console.log({ company: collect.idCompany, monto: collect.amountPaid});
               
               this.totalCollectProfit += collect.amountPaid;
             }

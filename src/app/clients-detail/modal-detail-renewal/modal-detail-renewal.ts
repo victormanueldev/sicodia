@@ -5,7 +5,7 @@ import { RenewalsService } from 'src/services/renewals/renewals.service';
 import { UsersService } from 'src/services/users/users.service';
 import * as moment from 'moment-timezone';
 import { CreditsService } from 'src/services/credits/credits.service';
-import { Credit } from 'src/models/credit.model';
+import { Credit, PaymentForecast } from 'src/models/credit.model';
 import { UtilsService } from 'src/services/utils/utils.service';
 import { CollectionsService } from 'src/services/collections/collections.service';
 import { Collection } from 'src/models/collection.moldel';
@@ -23,6 +23,7 @@ export class ModalDetailRenewal implements OnInit {
     activeCredit: Credit = null;
     activateButton: boolean = true;
     totalAmountToCredit: number = 0;
+    paymentsForecast: PaymentForecast[] = [];
 
     constructor(
         private modalCtrl: ModalController,
@@ -56,6 +57,7 @@ export class ModalDetailRenewal implements OnInit {
             idCompany: Number(this.usersService.getStorageData('idCompany')),
             name: this.usersService.getStorageData('name')
         }
+        
         this.renewalsService.getRenewal(this.navParams.get('id')).subscribe(res => {
             this.renewal = res;
             this.loaderRenewal = false;
@@ -88,6 +90,20 @@ export class ModalDetailRenewal implements OnInit {
 
             if (approval === 'Aprobado') {
 
+                // Valida si el crédito es semanal
+                if(this.renewal.numberFees < 25) {
+                    let auxDate = moment().tz('America/Bogota');
+                    for (let index = 0; index < this.renewal.numberFees; index++) {
+                        // Realiza unaproyección de pagos semanales tomando como referencia la fecha
+                        // en la que se creo el credito
+                        this.paymentsForecast[index] = {
+                            date: auxDate.add(7, 'days').format('YYYY-MM-DD'),
+                            expectedAmount: this.renewal.feesTotalAmount,
+                            paid: false
+                        }
+                    }
+                }
+
                 const credit: Credit = {
                     totalAmount: this.renewal.totalAmount,
                     creditDuration: this.renewal.creditDuration,
@@ -106,6 +122,7 @@ export class ModalDetailRenewal implements OnInit {
                     balance: (this.renewal.feesTotalAmount * this.renewal.numberFees),
                     createdAt: moment().tz("America/Bogota").format(),
                     acreditedAt: moment().tz("America/Bogota").format(),
+                    paymentsForecast: this.paymentsForecast,
                     idCompany: Number(this.usersService.getStorageData('idCompany'))
                 }
 

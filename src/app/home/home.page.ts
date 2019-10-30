@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { FcmService } from 'src/services/fcm/fcm.service';
 import { UtilsService } from 'src/services/utils/utils.service';
 import { CreditsService } from 'src/services/credits/credits.service';
-import { Credit } from 'src/models/credit.model';
+import { Credit, PaymentForecast } from 'src/models/credit.model';
 import { Collection } from 'src/models/collection.moldel';
 import { CollectionsService } from 'src/services/collections/collections.service';
 import { User } from 'src/models/user.model';
@@ -37,6 +37,7 @@ export class HomePage implements OnInit {
   ctx: CanvasRenderingContext2D;
   idCompany: number;
   totalPay: number = 0;
+  paymentsForecast: PaymentForecast[] = [];
 
   constructor(
     private fcmService: FcmService,
@@ -108,15 +109,15 @@ export class HomePage implements OnInit {
     this.usersService.getUsers(this.idCompany).subscribe(res => {
       this.users = res.filter(user => user != null);
       this.users.forEach(user => {
-          this.dailyCollections.push({
-            id: user.id,
-            name: user.name,
-            role: user.role,
-            today: moment().tz("America/Bogota").format("YYYY-MM-DD"),
-            totalCollected: 0,
-            totalNotPaid: 0
-          });
-        
+        this.dailyCollections.push({
+          id: user.id,
+          name: user.name,
+          role: user.role,
+          today: moment().tz("America/Bogota").format("YYYY-MM-DD"),
+          totalCollected: 0,
+          totalNotPaid: 0
+        });
+
       });
     });
 
@@ -139,7 +140,7 @@ export class HomePage implements OnInit {
     //   });
 
     //   console.log(allCollects.length);
-      
+
     // })
 
     try {
@@ -250,5 +251,29 @@ export class HomePage implements OnInit {
     modal.present();
   }
 
+  async updateCredits(): Promise<void> {
+    this.activeCredits.forEach(async credit => {
+      this.paymentsForecast = [];
+      if (credit.id === '20191029205145-1144423033') {
+        let auxDate = moment(credit.createdAt).tz('America/Bogota');
+        for (let index = 0; index < credit.numberFees; index++) {
+          this.paymentsForecast[index] = {
+            date: auxDate.add(7, 'days').format('YYYY-MM-DD'),
+            expectedAmount: credit.feesTotalAmount,
+            paid: false
+          }
+        }
+        for (let paid = 0; paid < credit.feesPaid; paid++) {
+          this.paymentsForecast[paid].paid = true;
+        }
+        try{
+          await this.creditsService.updateCredit(credit.id, { paymentsForecast: this.paymentsForecast });
+        } catch (error) {
+          console.log(error);
+        }
+        console.log("Updated!");
+      }
+    });
+  }
 
 }

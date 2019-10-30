@@ -19,7 +19,7 @@ import { UsersService } from 'src/services/users/users.service';
 })
 export class CollectionsPage implements OnInit {
 
-  clients: Credit[];
+  clients: Credit[] = [];
   filteredClients: Credit[];
   credit: Credit[];
   idClient: string;
@@ -27,6 +27,7 @@ export class CollectionsPage implements OnInit {
   fullNameClient: string;
   isHoliday: boolean = false;
   idCompany: number;
+  idCreditFeeNotPaid: string;
 
   constructor(
     private clientsService: ClientsService,
@@ -52,9 +53,31 @@ export class CollectionsPage implements OnInit {
 
     // Obtiene todos los créditos
     this.creditsService.getCredits(this.idCompany).subscribe(res => {
-      this.clients = res.filter(client => client != null && client.state == 'Acreditado');
+      this.clients = [];
+      const activeCredits = res.filter(client => client != null && client.state == 'Acreditado');
+      activeCredits.forEach(credit => {
+        credit.feesToPay = 0;
+        // Valida que el credito es semanal
+        if (credit.numberFees >= 25) {
+          this._addCredit(true, credit, 0, null);
+        } else if (credit.numberFees < 25 && credit.paymentsForecast.length > 0) {
+          credit.paymentsForecast.forEach((payment, index) => {
+            // Valida que en el array de proyeccuión existan cuotas  pendientes que sean 
+            // iguales a la fecha actual
+            if (payment.date === moment().tz('America/Bogota').format('YYYY-MM-DD') && !payment.paid) {
+              this._addCredit(true, credit, payment.expectedAmount, index);
+            // En caso contrario, si tiene coutas pendiente, añade el credito al array 
+            // para que aparezca en los recaudos disponibles
+            } else if (moment(payment.date) < moment().tz('America/Bogota') && !payment.paid) {
+              this._addCredit(true, credit, payment.expectedAmount, index);
+            }
+          });
+        }
+      });
+
       this.filteredClients = this.clients;
     });
+
 
     // Obtiene la información del usuario
     this.usersService.getUser(this.usersService.getStorageData('uid')).subscribe(res => {
@@ -62,6 +85,40 @@ export class CollectionsPage implements OnInit {
     });
 
   }
+
+  /**
+   * Añade un crédito al array que muestra los recaudos disponibles
+   * @param push
+   * @param creditToPush 
+   * @param expectedAmount 
+   * @param indexPaymentForecast 
+   */
+  private _addCredit(push: boolean, creditToPush: Credit, expectedAmount: number, indexPaymentForecast: number): void {
+    if(push){
+      let exist = false;
+      this.clients.forEach(credit => {
+        if(credit.id === creditToPush.id){
+          // Suma las cuotas pendientes del credito
+          credit.feesTotalAmount += expectedAmount;
+          // Suma las cuotas pendientes
+          credit.feesToPay += 1;
+          // Valida que el credito tenga una proyeccion de pagos (credito semanal)
+          creditToPush.paymentsForecast.length > 0  ? credit.paymentsForecast[indexPaymentForecast].paid = true : null;
+          // Valida que el credito exista dentro del array, en caso de que si actualiza
+          // las propiedades del mismo
+          exist = true;
+        }
+      });
+
+      if(exist === false){
+        // Si no existe el credito dentro del array, actualiza las propiedades 
+        // del mismo
+        creditToPush.paymentsForecast.length > 0 ? creditToPush.paymentsForecast[indexPaymentForecast].paid = true : null;
+        creditToPush.feesToPay += 1;
+        this.clients.push(creditToPush);
+      }
+    }
+  } 
 
   /**
    * Verifica si la fecha actual es festivo o domingo
@@ -88,7 +145,7 @@ export class CollectionsPage implements OnInit {
     this.clients = this.filteredClients.filter(client => client.fullNameClient.toLowerCase().indexOf(filterValue.toLowerCase()) > -1);
   }
 
-  async collect(idClient: string, fullNameClient: string): Promise<void> {
+  async collect(idClient: string, fullNameClient: string, idCredit: string): Promise<void> {
 
     if (this.isHoliday) {
       this.utilsService.presentToast(
@@ -106,15 +163,10 @@ export class CollectionsPage implements OnInit {
     this.idClient = idClient;
     this.fullNameClient = fullNameClient;
 
-    const promise = this.creditsService.getCreditByClient(idClient).subscribe(res => {
       try {
 
-        if (res.length === 0) {
-          throw "Ha ocurrido un error...";
-        }
-
-        this.credit = res.filter(credit => credit.state == 'Acreditado');
-
+        this.credit = this.clients.filter(credit => credit.state == 'Acreditado' && credit.id == idCredit);
+        
         if (this.credit[0].balance == 0 && this.credit[0].state == 'Pagado') {
           this.utilsService.presentToast(
             'Este cliente no tiene créditos activos',
@@ -153,10 +205,7 @@ export class CollectionsPage implements OnInit {
 
       } finally {
         loader.dismiss();
-        promise.unsubscribe();
       }
-
-    })
 
   }
 
@@ -189,8 +238,8 @@ export class CollectionsPage implements OnInit {
     this.utilsService.presentAlert(
       'Advertencia',
       '¿Está seguro de realizar esta acción?',
-      `Registrar ${paidFee 
-        ? `pago de la cuota de ${this.fullNameClient} por $ ${feesTotalAmount.toLocaleString('DE-de')}` 
+      `Registrar ${paidFee
+        ? `pago de la cuota de ${this.fullNameClient} por $ ${feesTotalAmount.toLocaleString('DE-de')}`
         : `no pago de la cuota de ${this.fullNameClient}`} `,
       [
         {
@@ -223,9 +272,10 @@ export class CollectionsPage implements OnInit {
       if (paidFee) { // Valida que la cuota fue pagada
 
         let data: Credit = {
-          feesPaid: this.credit[0].feesPaid + 1,
-          outstandingFees: this.credit[0].outstandingFees - 1,
+          feesPaid: this.credit[0].feesPaid + this.credit[0].feesToPay,
+          outstandingFees: this.credit[0].outstandingFees - this.credit[0].feesToPay,
           balance: this.credit[0].balance - this.credit[0].feesTotalAmount,
+          paymentsForecast: this.credit[0].paymentsForecast,
           state: null
         }
 
@@ -239,7 +289,7 @@ export class CollectionsPage implements OnInit {
         await this.creditsService.updateCredit(this.credit[0].id, data);
       } else {
 
-        await this.creditsService.updateCredit(this.credit[0].id, { feesNotPaid: this.credit[0].feesNotPaid + 1 });
+        await this.creditsService.updateCredit(this.credit[0].id, { feesNotPaid: this.credit[0].feesNotPaid + this.credit[0].feesToPay });
         await this.clientsService.updateClient({ billingState: 'Atrasado' }, (this.idClient));
 
       }
@@ -266,7 +316,7 @@ export class CollectionsPage implements OnInit {
       );
 
     } catch (error) {
-
+      console.log(error)
       this.utilsService.presentToast(
         'Error al guardar la información',
         4000,

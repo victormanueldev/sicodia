@@ -20,23 +20,23 @@
 
   <!-- Listado de clientes -->
   <ion-list>
-    <ion-card *ngFor="let client of clients">
+    <ion-card *ngFor="let credit of clients">
       <ion-item>
 
         <!-- <ion-icon name="contact" slot="start"></ion-icon> -->
         <ion-label text-wrap>
           <ion-text>
-            <h3>{{ client.fullNameClient }}</h3>
+            <h3>{{ credit.fullNameClient }}</h3>
           </ion-text>
-          <p><b>C.C. </b>{{ client.idClient }}</p>
+          <p><b>C.C. </b>{{ credit.idClient }}</p>
         </ion-label>
-        <ion-chip style="padding: 15px 21px" *ngIf="client.numberFees >= 25">
+        <ion-chip style="padding: 15px 21px" *ngIf="credit.numberFees >= 25">
             <ion-label  color="primary">Diario </ion-label>
           </ion-chip>
-          <ion-chip  *ngIf="client.numberFees < 25">
+          <ion-chip  *ngIf="credit.numberFees < 25">
             <ion-label color="secondary">Semanal</ion-label>
           </ion-chip>
-        <ion-button fill="outline" slot="end" (click)="collect(client.idClient, client.fullNameClient)">Cobrar
+        <ion-button fill="outline" slot="end" (click)="collect(credit.idClient, credit.fullNameClient, credit.id)">Cobrar
         </ion-button>
       </ion-item>
     </ion-card>
