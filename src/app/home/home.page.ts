@@ -37,6 +37,7 @@ export class HomePage implements OnInit {
   ctx: CanvasRenderingContext2D;
   idCompany: number;
   totalPay: number = 0;
+  collectsTrue: number = 0;
   paymentsForecast: PaymentForecast[] = [];
 
   constructor(
@@ -74,7 +75,7 @@ export class HomePage implements OnInit {
         datasets: [
           {
             label: 'Paid',
-            data: [50, 50],
+            data: [0, 0],
             backgroundColor: ['#10dc60', '#f04141'],
             borderColor: ['#10dc60', '#f04141']
           },
@@ -133,15 +134,19 @@ export class HomePage implements OnInit {
       this._calculateCollectionsPayments(res.filter(collection => collection != null));
     });
 
+
+    /** Estado de facturacion SICODIA **/
     // this.collectionsService.getBillingState(this.idCompany).subscribe(res => {
+    //   this.collectsTrue = 0;
     //   const allCollects = res.filter(colection => colection !== null);
     //   allCollects.forEach(collect => {
-    //     this.totalPay += 300;
+    //     if(moment(collect.createdAt) >= moment('2019-12-01') && moment(collect.createdAt) <= moment('2019-12-31')){
+    //       this.totalPay += 300;
+    //       this.collectsTrue++;
+    //     }
     //   });
-
-    //   console.log(allCollects.length);
-
-    // })
+    //   console.log( { cobrosTotales: this.collectsTrue, pago: this.totalPay } );
+    // });
 
     try {
       await this.fcmService.getTokenDevice();
