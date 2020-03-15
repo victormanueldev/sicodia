@@ -136,17 +136,17 @@ export class HomePage implements OnInit {
 
 
     /** Estado de facturacion SICODIA **/
-    // this.collectionsService.getBillingState(this.idCompany).subscribe(res => {
-    //   this.collectsTrue = 0;
-    //   const allCollects = res.filter(colection => colection !== null);
-    //   allCollects.forEach(collect => {
-    //     if(moment(collect.createdAt) >= moment('2019-12-01') && moment(collect.createdAt) <= moment('2019-12-31')){
-    //       this.totalPay += 300;
-    //       this.collectsTrue++;
-    //     }
-    //   });
-    //   console.log( { cobrosTotales: this.collectsTrue, pago: this.totalPay } );
-    // });
+    this.collectionsService.getBillingState(1).subscribe(res => {
+      this.collectsTrue = 0;
+      const allCollects = res.filter(colection => colection !== null);
+      allCollects.forEach(collect => {
+        if(moment(collect.createdAt) >= moment('2020-01-01') && moment(collect.createdAt) <= moment('2020-02-29')){
+          this.totalPay += 300;
+          this.collectsTrue++;
+        }
+      });
+      console.log( { cobrosTotales: this.collectsTrue, pago: this.totalPay } );
+    });
 
     try {
       await this.fcmService.getTokenDevice();
