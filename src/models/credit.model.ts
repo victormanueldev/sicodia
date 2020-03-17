@@ -20,6 +20,10 @@ export interface Credit {
     idCompany?           : number;   // ID de la empresa de cobros
     paymentsForecast?    : PaymentForecast[];
     feesToPay?           : number;   // Cuotas a pagar, segun calculo de proyeccion y cuotas no pagadas
+    routeNumber?         : number;	 // Numero de la ruta asociada al usuario
+	positionOnRoute?     : number;	 // Numero de orden en la lista de cobros
+	collectFrecuency?	 : number;	 // Frecuencia de cobros en dias
+	nextCollect?      	 : string;	 // Fecha del proximo cobro
 }
 
 /**

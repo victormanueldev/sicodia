@@ -19,6 +19,11 @@ export class AppComponent {
       icon: 'home'
     },
     {
+      title: 'Creditos Disponibles',
+      url: '/credits-master',
+      icon: 'card'
+    },
+    {
       title: 'Clientes',
       url: '/clients',
       icon: 'person'

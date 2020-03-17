@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, reduce } from 'rxjs/operators';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
 import { Credit } from 'src/models/credit.model';
 import { ClientsService } from '../clients/clients.service';
+import { CreditMaster } from 'src/models/credit-master.model';
 
 @Injectable({
   providedIn: 'root'
@@ -13,6 +14,9 @@ export class CreditsService {
   private creditsCollection: AngularFirestoreCollection<Credit>;
   private credits: Observable<Credit[]>;
 
+  private creditsMasterCollection: AngularFirestoreCollection<CreditMaster>;
+  private availableCredits: Observable<CreditMaster[]>;
+
 
 
   constructor(
@@ -20,6 +24,7 @@ export class CreditsService {
     private clientesServce: ClientsService
   ) {
     this.creditsCollection = this.afs.collection<Credit>('creditos');
+    this.creditsMasterCollection = this.afs.collection<CreditMaster>('maestro-creditos');
   }
 
   getCredits(idCompany: number): Observable<Credit[]> {
@@ -73,6 +78,15 @@ export class CreditsService {
 
   deleteCredit(id: string): Promise<void> {
     return this.creditsCollection.doc(id).delete();
+  }
+
+  createAvailableCredit( data: CreditMaster ): Promise<void> {
+    const id = this.afs.createId();
+    return this.creditsMasterCollection.doc(id).set(data);
+  }
+
+  getAvailableCredits(idCompany: number): Observable<CreditMaster[]> {
+    return this.afs.collection<CreditMaster>('maestro-creditos', ref => ref.where('idCompany','==',idCompany)).valueChanges();
   }
 
 }

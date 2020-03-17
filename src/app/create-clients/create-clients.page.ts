@@ -8,6 +8,8 @@ import * as moment from 'moment-timezone';
 import { StaticFees } from './static-fees';
 import { UtilsService } from 'src/services/utils/utils.service';
 import { UsersService } from 'src/services/users/users.service';
+import { CreditMaster } from 'src/models/credit-master.model';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-create-clients',
@@ -20,6 +22,10 @@ export class CreateClientsPage implements OnInit {
   staticFees: Array<any> = StaticFees;
   // Opciones de pago disponibles por cada monto
   availableFees: Array<any> = [];
+  // Creditos disponibles
+  availableCredits: CreditMaster[] = [];
+  availableAmounts: number[] = [];
+  availableNumberFees: CreditMaster[] = [];
 
   //Formulario de clientes
   mainForm = new FormGroup({
@@ -34,9 +40,11 @@ export class CreateClientsPage implements OnInit {
       city: new FormControl(''),
     }),
     credit: new FormGroup({
+      routeNumber: new FormControl(''),
+      positionOnRoute: new FormControl(''),
+      collectFrecuency: new FormControl(''),
       totalAmount: new FormControl(''),
       numberFees: new FormControl(''),
-      creditDuration: new FormControl(''),
       feesTotalAmount: new FormControl('')
     })
   })
@@ -52,12 +60,22 @@ export class CreateClientsPage implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.idCompany = Number(this.usersService.getStorageData("idCompany"))
+    this.idCompany = Number(this.usersService.getStorageData("idCompany"));
+    const masterSubscription = this.creditsService.getAvailableCredits( this.idCompany )
+      .subscribe( credits => {
+        this.availableCredits = credits;
+        this.availableAmounts = [...new Set(credits.map( c => c.totalAmount ))].sort();
+        masterSubscription.unsubscribe(); 
+      })
   }
 
   async createClient(): Promise<void> {
     const loader = await this.utilsServie.presentLoader('Guardando información...');
     loader.present();
+
+    let now = moment().tz("America/Bogota");
+    console.log(this.mainForm.value.collectFrecuency);
+     
 
     //Datos a enviar
     const client: Client = {
@@ -68,12 +86,12 @@ export class CreateClientsPage implements OnInit {
     }
 
     // Valida si el crédito es semanal
-    if(this.mainForm.value.credit.numberFees < 25) {
+    if(parseInt(this.mainForm.value.credit.numberFees.numberFees) < 25) {
       let auxDate = moment().tz('America/Bogota');
-      for (let index = 0; index < this.mainForm.value.credit.numberFees; index++) {
+      for (let index = 0; index < parseInt(this.mainForm.value.credit.numberFees.numberFees); index++) {
         this.paymentsForecast[index] = {
           date: auxDate.add(7, 'days').format('YYYY-MM-DD'),
-          expectedAmount: this.mainForm.value.credit.feesTotalAmount,
+          expectedAmount: parseInt(this.mainForm.value.credit.feesTotalAmount),
           paid: false
         }
       }
@@ -85,17 +103,20 @@ export class CreateClientsPage implements OnInit {
       idClient: client.id,
       fullNameClient: client.fullName,
       // Ganacia Total = (Valor Cuota * No. de cuotas) - Total de Crédito
-      profitTotal: (this.mainForm.value.credit.feesTotalAmount * this.mainForm.value.credit.numberFees) - this.mainForm.value.credit.totalAmount,
+      profitTotal: (parseInt(this.mainForm.value.credit.feesTotalAmount) * parseInt(this.mainForm.value.credit.numberFees.numberFees)) - parseInt(this.mainForm.value.credit.totalAmount),
       state: 'Acreditado',
       feesPaid: 0,
       feesNotPaid: 0,
-      outstandingFees: this.mainForm.value.credit.numberFees,
+      numberFees: parseInt(this.mainForm.value.credit.numberFees.numberFees),
+      feesTotalAmount: parseInt(this.mainForm.value.credit.feesTotalAmount),
+      outstandingFees: parseInt(this.mainForm.value.credit.numberFees.numberFees),
       // Saldo = Valor Cuota * No. de cuotas
-      balance: (this.mainForm.value.credit.feesTotalAmount * this.mainForm.value.credit.numberFees),
+      balance: (parseInt(this.mainForm.value.credit.feesTotalAmount) * parseInt(this.mainForm.value.credit.numberFees.numberFees)),
       createdAt: moment().tz("America/Bogota").format(),
       acreditedAt: moment().tz("America/Bogota").format(),
       idCompany: this.idCompany,
-      paymentsForecast: this.paymentsForecast
+      paymentsForecast: [],//this.paymentsForecast,
+      nextCollect: moment().tz("America/Bogota").add(parseInt(this.mainForm.value.credit.collectFrecuency), 'days').format('YYYY-MM-DD')
     }
 
     try {
@@ -112,6 +133,8 @@ export class CreateClientsPage implements OnInit {
       this.mainForm.reset();
 
     } catch (error) {
+      console.log(error);
+      
       this.utilsServie.presentToast(
         'Ocurrió un error inesperado',
         6000,
@@ -129,10 +152,8 @@ export class CreateClientsPage implements OnInit {
    * @param event 
    */
   showAvailablesFees(event: any): void {
-    this.mainForm.patchValue({ credit: { numberFees: '', feesTotalAmount: '', creditDuration: '' } });
-    if(event.target.value) {
-      this.availableFees = this.staticFees.filter(fee => fee.totalAmount === parseInt(event.target.value) )[0].availableFees;
-    } else { return; }
+     this.availableNumberFees = this.availableCredits
+      .filter( credit => credit.totalAmount === Number(event.target.value) )
   }
 
   /**
@@ -140,13 +161,12 @@ export class CreateClientsPage implements OnInit {
    * de crédito seleccionado
    * @param event 
    */
-  setFeeTotalAmount(event: any): void {
+  showFeeTotalAmount(event: any): void {
     try {
-      let durationSelected = parseInt(event.target.value);
-      this.mainForm.patchValue({ credit: { feesTotalAmount: this.availableFees.filter(fee => fee.numberFees == durationSelected)[0].totalFee || '' } })
-      this.mainForm.patchValue({ credit: { numberFees: this.availableFees.filter(fee => fee.numberFees == durationSelected)[0].numberFees || '' } })
-    } catch(error) { // Encapsula el error de (availableFees: undefined)
+      this.mainForm.patchValue({ credit: { feesTotalAmount: event.target.value.feesTotalAmount.toString() } });
+    } catch (error) {  // Encapsula el error de (availableFees: undefined)
       this.mainForm.patchValue({ credit: { feesTotalAmount: '' } }); 
     }
+    
   }
 }

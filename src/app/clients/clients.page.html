@@ -25,7 +25,7 @@
 
   <ion-list>
     <ion-item detail="true" *ngFor="let client of clients" (click)="toDetails(client.id)">
-        <ion-label text-wrap>
+        <ion-label class="ion-text-wrap">
             <ion-text>
               <h3>{{ client.fullName}}</h3>
             </ion-text>

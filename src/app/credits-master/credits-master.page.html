@@ -1,0 +1,32 @@
+<ion-header>
+  <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-back-button defaultHref="home"></ion-back-button>
+      </ion-buttons>
+      <ion-title>Créditos Disponibles</ion-title>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <form [formGroup]="creditsForm">
+
+    <ion-item>
+      <ion-label position="floating">Monto total</ion-label>
+      <ion-input formControlName="totalAmount" name="totalAmount" type="number" required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Número de cuotas</ion-label>
+      <ion-input formControlName="numberFees" name="numberFees" type="number" required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Valor de la cuota</ion-label>
+      <ion-input formControlName="feesTotalAmount" name="feesTotalAmount" type="number" required></ion-input>
+    </ion-item>
+
+    <ion-button expand="block" (click)="createCredit()" [disabled]="!creditsForm.valid">Guardar</ion-button>
+  </form>
+
+</ion-content>

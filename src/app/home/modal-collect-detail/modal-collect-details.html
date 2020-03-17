@@ -15,7 +15,7 @@
 
     <ion-list>
         <ion-item *ngFor="let collect of collections" >
-            <ion-label text-wrap>
+            <ion-label class="ion-text-wrap">
                 <ion-text>
                     <h3>{{ collect.fullNameClient}}</h3>
                 </ion-text>
@@ -25,7 +25,7 @@
         </ion-item>
 
         <ion-item *ngIf="emptyCollections">
-            <ion-label text-wrap>
+            <ion-label class="ion-text-wrap">
               <ion-text class="ion-text-center">
                 <h3>No hay recaudos registrados</h3>
               </ion-text>

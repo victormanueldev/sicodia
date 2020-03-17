@@ -10,6 +10,7 @@ export interface User {
     company?    : string;   // Nombre de la empresa 
     idCompany?  : number;   // ID de la empresa ** Inicia en 1 ***
     createdAt?  : string;
+    routeNumber?: number;
 }
 
 /**
