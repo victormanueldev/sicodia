@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ModalController, NavParams } from '@ionic/angular';
 import { FormGroup, FormControl } from '@angular/forms';
 import { StaticFees } from 'src/app/create-clients/static-fees';
@@ -12,22 +12,29 @@ import { User } from 'src/models/user.model';
 import { FcmService } from 'src/services/fcm/fcm.service';
 import { RenewalsService } from 'src/services/renewals/renewals.service';
 import { Renewal } from 'src/models/renewal.model';
+import { CreditMaster } from 'src/models/credit-master.model';
 
 @Component({
     selector: 'modal-renewal',
     templateUrl: './modal-renewal.html'
 })
-export class ModalPage {
+export class ModalPage implements OnInit {
 
     // Liquidación del crédito predefinida
     staticFees: Array<any> = StaticFees;
     // Opciones de pago disponibles por cada monto
     availableFees: Array<any> = [];
+    // Creditos disponibles
+    availableCredits: CreditMaster[] = [];
+    availableAmounts: number[] = [];
+    availableNumberFees: CreditMaster[] = [];
+    idCompany: number;
+  
 
     creditForm = new FormGroup({
+        collectFrecuency: new FormControl(''),
         totalAmount: new FormControl(''),
         numberFees: new FormControl(''),
-        creditDuration: new FormControl(''),
         feesTotalAmount: new FormControl('')
     });
 
@@ -42,6 +49,16 @@ export class ModalPage {
         private fcm: FcmService,
         private renewalsService: RenewalsService
     ) { }
+
+    ngOnInit() {
+        this.idCompany = Number(this.usersService.getStorageData("idCompany"));
+        const masterSubscription = this.creditsService.getAvailableCredits( this.idCompany )
+            .subscribe( credits => {
+                this.availableCredits = credits;
+                this.availableAmounts = [...new Set(credits.map( c => c.totalAmount ))].sort();
+                masterSubscription.unsubscribe(); 
+            })
+    }
 
     dismissModal() {
         this.modalCtrl.dismiss({
@@ -58,7 +75,11 @@ export class ModalPage {
 
         const renewal: Renewal = {
             id: moment().tz('America/Bogota').format('YYYYMMDDHHmmss') + 'RN' + this.navParams.get('id'),
-            ...this.creditForm.value,
+            totalAmount: parseInt(this.creditForm.value.totalAmount),
+            feesTotalAmount: parseInt(this.creditForm.value.feesTotalAmount),
+            creditDuration: this.creditForm.value.numberFees.numberFees + ' Días',
+            numberFees: parseInt(this.creditForm.value.numberFees.numberFees),
+            collectFrecuency: parseInt(this.creditForm.value.collectFrecuency),
             requestDate: moment().tz('America/Bogota').format('YYYY-MM-DD HH:mm:ss'),
             idClient: this.navParams.get('id'),
             requestUid: this.usersService.getStorageData("uid"),
@@ -108,21 +129,27 @@ export class ModalPage {
 
     }
 
+    /**
+     * Muestra las opciones de tiempo de crédito disponibles
+     * para el monto seleccionado
+     * @param event 
+     */
     showAvailablesFees(event: any): void {
-        this.creditForm.patchValue({ numberFees: '', feesTotalAmount: '', creditDuration: '' });
-        if (event.target.value) {
-            this.availableFees = this.staticFees.filter(fee => fee.totalAmount === parseInt(event.target.value))[0].availableFees;
-        } else { return; }
+        this.availableNumberFees = this.availableCredits
+        .filter( credit => credit.totalAmount === Number(event.target.value) )
     }
 
-    setFeeTotalAmount(event: any): void {
-        try {
-            let durationSelected = parseInt(event.target.value);
-            this.creditForm.patchValue({ feesTotalAmount: this.availableFees.filter(fee => fee.numberFees == durationSelected)[0].totalFee || '' })
-            this.creditForm.patchValue({ numberFees: this.availableFees.filter(fee => fee.numberFees == durationSelected)[0].numberFees || '' })
-        } catch (error) { // Encapsula el error de (availableFees: undefined)
-            this.creditForm.patchValue({ feesTotalAmount: '' });
-        }
+    /**
+     * Establece el valor de la cuota dependiendo del tiempo
+     * de crédito seleccionado
+     * @param event 
+     */
+    showFeeTotalAmount(event: any): void {
+    try {
+        this.creditForm.patchValue( { feesTotalAmount: event.target.value.feesTotalAmount.toString() } );
+    } catch (error) {  // Encapsula el error de (availableFees: undefined)
+        this.creditForm.patchValue( { feesTotalAmount: '' } ); 
+    }
     }
 
 }

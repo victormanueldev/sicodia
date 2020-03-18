@@ -123,7 +123,11 @@ export class ModalDetailRenewal implements OnInit {
                     createdAt: moment().tz("America/Bogota").format(),
                     acreditedAt: moment().tz("America/Bogota").format(),
                     paymentsForecast: this.paymentsForecast,
-                    idCompany: Number(this.usersService.getStorageData('idCompany'))
+                    idCompany: Number(this.usersService.getStorageData('idCompany')),
+                    nextCollect: moment().tz("America/Bogota").add(this.renewal.collectFrecuency, 'days').format('YYYY-MM-DD'),
+                    collectFrecuency: this.renewal.collectFrecuency,
+                    routeNumber: this.navParams.get('routeNumber'),
+                    positionOnRoute: this.navParams.get('positionOnRoute')
                 }
 
                 for (let index = 0; index < this.activeCredit.outstandingFees; index++) {

@@ -82,7 +82,9 @@ export class CreateClientsPage implements OnInit {
       ...this.mainForm.value.client,
       id: this.mainForm.value.id.toString(),
       billingState: 'Al dia',
-      idCompany: this.idCompany
+      idCompany: this.idCompany,
+      routeNumber: this.mainForm.value.credit.routeNumber,
+      positionOnRoute: this.mainForm.value.credit.positionOnRoute
     }
 
     // Valida si el crédito es semanal
@@ -167,6 +169,5 @@ export class CreateClientsPage implements OnInit {
     } catch (error) {  // Encapsula el error de (availableFees: undefined)
       this.mainForm.patchValue({ credit: { feesTotalAmount: '' } }); 
     }
-    
   }
 }

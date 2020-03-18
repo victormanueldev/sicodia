@@ -16,4 +16,6 @@ export interface Client {
     codeudorAddress?    : string;   // Direccion del codeudor
     billingState        : string;   // Estado de pagos
     idCompany?          : number;   // ID de la empresa de cobros
+    routeNumber         : number;
+    positionOnRoute     : number;
 }

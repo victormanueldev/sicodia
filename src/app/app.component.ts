@@ -19,7 +19,7 @@ export class AppComponent {
       icon: 'home'
     },
     {
-      title: 'Creditos Disponibles',
+      title: 'Crear Créditos',
       url: '/credits-master',
       icon: 'card'
     },

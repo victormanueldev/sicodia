@@ -7,6 +7,7 @@ export interface Renewal {
     feesTotalAmount?    : number;   // Valor total de la cuota
     numberFees?         : number;   // Numero total de cutoas
     creditDuration?     : string;   // Duracion del cédito
+    collectFrecuency?	 : number;	 // Frecuencia de cobros en dias
     requestDate?         : string;    // Fecha de solicitud  
     idClient?            : string;    // Identificacion del cliente
     requestUid?          : string;    // ID del usuario que la solicitó

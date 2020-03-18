@@ -96,7 +96,9 @@ export class ClientsDetailPage implements OnInit {
         id: this.renewal.id,
         idActiveCredit: this.activeCredit ? this.activeCredit.id : 'none',
         idClient: this.clientId,
-        fullNameClient: this.client.fullName
+        fullNameClient: this.client.fullName,
+        routeNumber: this.client.routeNumber,
+        positionOnRoute: this.client.positionOnRoute
       }
     });
 
