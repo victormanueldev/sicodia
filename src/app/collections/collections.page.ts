@@ -28,6 +28,7 @@ export class CollectionsPage implements OnInit {
   isHoliday: boolean = false;
   idCompany: number;
   idCreditFeeNotPaid: string;
+  routeNumber: number;
 
   constructor(
     private clientsService: ClientsService,
@@ -44,6 +45,7 @@ export class CollectionsPage implements OnInit {
   ngOnInit() {
 
     this.idCompany = Number(this.usersService.getStorageData("idCompany"));
+    this.routeNumber = Number(this.usersService.getStorageData("routeNumber"));
 
     // Obtiene todos los clientes y los almacena en diferentes variables
     // this.clientsService.getClients(this.idCompany).subscribe(res => {
@@ -52,28 +54,32 @@ export class CollectionsPage implements OnInit {
     // });
 
     // Obtiene todos los créditos
-    this.creditsService.getCredits(this.idCompany).subscribe(res => {
+    this.creditsService.getActiveCreditsbyRoute(this.idCompany, this.routeNumber).subscribe(res => {
       this.clients = [];
-      const activeCredits = res.filter(client => client != null && client.state == 'Acreditado');
-      activeCredits.forEach(credit => {
-        credit.feesToPay = 0;
-        // Valida que el credito es semanal
-        if (credit.numberFees >= 25) {
-          this._addCredit(true, credit, 0, null);
-        } else if (credit.numberFees < 25 && credit.paymentsForecast.length > 0) {
-          credit.paymentsForecast.forEach((payment, index) => {
-            // Valida que en el array de proyeccuión existan cuotas  pendientes que sean 
-            // iguales a la fecha actual
-            if (payment.date === moment().tz('America/Bogota').format('YYYY-MM-DD') && !payment.paid) {
-              this._addCredit(true, credit, payment.expectedAmount, index);
-            // En caso contrario, si tiene coutas pendiente, añade el credito al array 
-            // para que aparezca en los recaudos disponibles
-            } else if (moment(payment.date) < moment().tz('America/Bogota') && !payment.paid) {
-              this._addCredit(true, credit, payment.expectedAmount, index);
-            }
-          });
-        }
-      });
+      this.clients = res.filter(client => 
+        client != null && 
+        client.state == 'Acreditado' && 
+        client.nextCollect == moment().tz("America/Bogota").format("YYYY-MM-DD")
+      );
+      // activeCredits.forEach(credit => {
+      //   credit.feesToPay = 0;
+      //   // Valida que el credito es semanal
+      //   if (credit.numberFees >= 25) {
+      //     this._addCredit(true, credit, 0, null);
+      //   } else if (credit.numberFees < 25 && credit.paymentsForecast.length > 0) {
+      //     credit.paymentsForecast.forEach((payment, index) => {
+      //       // Valida que en el array de proyeccuión existan cuotas  pendientes que sean 
+      //       // iguales a la fecha actual
+      //       if (payment.date === moment().tz('America/Bogota').format('YYYY-MM-DD') && !payment.paid) {
+      //         this._addCredit(true, credit, payment.expectedAmount, index);
+      //       // En caso contrario, si tiene coutas pendiente, añade el credito al array 
+      //       // para que aparezca en los recaudos disponibles
+      //       } else if (moment(payment.date) < moment().tz('America/Bogota') && !payment.paid) {
+      //         this._addCredit(true, credit, payment.expectedAmount, index);
+      //       }
+      //     });
+      //   }
+      // });
 
       this.filteredClients = this.clients;
     });

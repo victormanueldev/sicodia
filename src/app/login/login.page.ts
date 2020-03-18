@@ -56,6 +56,7 @@ export class LoginPage implements OnInit {
         localStorage.setItem('role', res.role);
         localStorage.setItem('name', res.name);
         localStorage.setItem("uid", resAuth.user.uid);
+        localStorage.setItem("routeNumber", res.routeNumber.toString());
         promise.unsubscribe();
         this.router.navigate(['/home']);
       });

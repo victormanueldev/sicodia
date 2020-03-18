@@ -68,6 +68,14 @@ export class CreditsService {
     return this.afs.collection<Credit>('creditos', ref => ref.where('state', '==', 'Acreditado').where('idCompany','==',idCompany)).valueChanges();
   }
 
+  getActiveCreditsbyRoute(idCompany: number, routeNumber: number): Observable<Credit[]> {
+    return this.afs.collection<Credit>('creditos', ref => ref
+      .where('state', '==', 'Acreditado')
+      .where('idCompany','==',idCompany)
+      .where('routeNumber', '==', routeNumber)
+    ).valueChanges();
+  }
+
   addCredit(data: Credit): Promise<void> {
     return this.creditsCollection.doc(data.id).set(data);
   }
