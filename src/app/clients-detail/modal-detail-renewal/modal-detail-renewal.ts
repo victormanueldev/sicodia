@@ -10,6 +10,7 @@ import { UtilsService } from 'src/services/utils/utils.service';
 import { CollectionsService } from 'src/services/collections/collections.service';
 import { Collection } from 'src/models/collection.moldel';
 import { User } from 'src/models/user.model';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'modal-detail-renewal',
@@ -24,6 +25,10 @@ export class ModalDetailRenewal implements OnInit {
     activateButton: boolean = true;
     totalAmountToCredit: number = 0;
     paymentsForecast: PaymentForecast[] = [];
+
+    // Subscriptions
+    creditSubs: Subscription = new Subscription();
+    renewalSubs: Subscription = new Subscription();
 
     constructor(
         private modalCtrl: ModalController,
@@ -46,7 +51,7 @@ export class ModalDetailRenewal implements OnInit {
             }
             this.activateButton = false;
         } else {
-            this.creditsService.getCredit(this.navParams.get('idActiveCredit')).subscribe(res => {
+            this.creditSubs = this.creditsService.getCredit(this.navParams.get('idActiveCredit')).subscribe(res => {
                 this.activeCredit = res;
                 this.activateButton = false;
             });
@@ -58,7 +63,7 @@ export class ModalDetailRenewal implements OnInit {
             name: this.usersService.getStorageData('name')
         }
         
-        this.renewalsService.getRenewal(this.navParams.get('id')).subscribe(res => {
+        this.renewalSubs = this.renewalsService.getRenewal(this.navParams.get('id')).subscribe(res => {
             this.renewal = res;
             this.loaderRenewal = false;
             if(this.activeCredit.balance === 0) {
@@ -173,6 +178,11 @@ export class ModalDetailRenewal implements OnInit {
             loader.dismiss();
             this.dismissModal();
         }
+    }
+
+    ionViewDidLeave() {
+        this.creditSubs.unsubscribe();
+        this.renewalSubs.unsubscribe();
     }
 
 

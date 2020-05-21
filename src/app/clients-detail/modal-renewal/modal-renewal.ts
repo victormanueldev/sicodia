@@ -13,6 +13,7 @@ import { FcmService } from 'src/services/fcm/fcm.service';
 import { RenewalsService } from 'src/services/renewals/renewals.service';
 import { Renewal } from 'src/models/renewal.model';
 import { CreditMaster } from 'src/models/credit-master.model';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'modal-renewal',
@@ -40,6 +41,9 @@ export class ModalPage implements OnInit {
 
     users: User[];
 
+    // Subsctiption
+    userSubs: Subscription = new Subscription();
+
     constructor(
         private modalCtrl: ModalController,
         private navParams: NavParams,
@@ -55,7 +59,8 @@ export class ModalPage implements OnInit {
         const masterSubscription = this.creditsService.getAvailableCredits( this.idCompany )
             .subscribe( credits => {
                 this.availableCredits = credits;
-                this.availableAmounts = [...new Set(credits.map( c => c.totalAmount ))].sort();
+                let amountsAvailables = credits.map( c => c.totalAmount );
+                this.availableAmounts = [...new Set(amountsAvailables)].sort();
                 masterSubscription.unsubscribe(); 
             })
     }
@@ -99,7 +104,7 @@ export class ModalPage implements OnInit {
 
         try {
 
-            await this.usersService.getUsers(idCompany).subscribe(res => {
+            this.userSubs = this.usersService.getUsers(idCompany).subscribe(res => {
                 this.users = res.filter(user => user != null);
                 this.users.forEach(async user => {
                     // Valida que el usuario sea administrados y diferente al usuario logueado
@@ -122,7 +127,7 @@ export class ModalPage implements OnInit {
             );
 
         } catch (error) {
-            this.utilsService.presentAlert("Error", "Error inesperado", error, [{ text: 'OK' }], '');
+            this.utilsService.presentAlert("Error", "Error inesperado", error, [{ text: 'OK' }]);
         } finally {
             loader.dismiss();
         }
@@ -149,7 +154,11 @@ export class ModalPage implements OnInit {
         this.creditForm.patchValue( { feesTotalAmount: event.target.value.feesTotalAmount.toString() } );
     } catch (error) {  // Encapsula el error de (availableFees: undefined)
         this.creditForm.patchValue( { feesTotalAmount: '' } ); 
+        }   
     }
+
+    ionViewDidLeave() {
+        this.userSubs.unsubscribe();
     }
 
 }

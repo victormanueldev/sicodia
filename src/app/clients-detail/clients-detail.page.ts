@@ -10,6 +10,7 @@ import { ModalDetailRenewal } from './modal-detail-renewal/modal-detail-renewal'
 import { RenewalsService } from 'src/services/renewals/renewals.service';
 import { Renewal } from 'src/models/renewal.model';
 import { UsersService } from 'src/services/users/users.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-clients-detail',
@@ -27,6 +28,7 @@ export class ClientsDetailPage implements OnInit {
 
   // Loader
   loaderActiveCredit: boolean = true;
+
 
   constructor(
     private clientsSerivice: ClientsService,

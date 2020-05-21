@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ClientsService } from 'src/services/clients/clients.service';
-import { Client } from 'src/models/client.model';
 import { CreditsService } from 'src/services/credits/credits.service';
 import { UtilsService } from 'src/services/utils/utils.service';
-import { AlertButton } from '@ionic/core';
+import { AlertButton, AlertInput } from '@ionic/core';
 import { Credit } from 'src/models/credit.model';
 import { Collection } from 'src/models/collection.moldel';
 import * as moment from 'moment-timezone';
@@ -11,6 +10,7 @@ import { User } from 'src/models/user.model';
 import { CollectionsService } from 'src/services/collections/collections.service';
 import * as ColombiaHolidays from 'colombia-holidays';
 import { UsersService } from 'src/services/users/users.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-collections',
@@ -30,6 +30,8 @@ export class CollectionsPage implements OnInit {
   idCreditFeeNotPaid: string;
   routeNumber: number;
 
+
+
   constructor(
     private clientsService: ClientsService,
     private creditsService: CreditsService,
@@ -38,49 +40,21 @@ export class CollectionsPage implements OnInit {
     private usersService: UsersService
   ) { }
 
-  ionViewDidEnter() {
-    this._verifyHolidayOrSunday();
-  }
+  ionViewDidEnter() { }
 
   ngOnInit() {
 
     this.idCompany = Number(this.usersService.getStorageData("idCompany"));
     this.routeNumber = Number(this.usersService.getStorageData("routeNumber"));
 
-    // Obtiene todos los clientes y los almacena en diferentes variables
-    // this.clientsService.getClients(this.idCompany).subscribe(res => {
-    //   this.clients = res.filter(client => client != null );
-    //   this.filteredClients = this.clients;
-    // });
-
     // Obtiene todos los créditos
-    this.creditsService.getActiveCreditsbyRoute(this.idCompany, this.routeNumber).subscribe(res => {
+   this.creditsService.getActiveCreditsbyRoute(this.idCompany, this.routeNumber).subscribe(res => {
       this.clients = [];
       this.clients = res.filter(client => 
-        client != null && 
-        client.state == 'Acreditado' && 
-        client.nextCollect == moment().tz("America/Bogota").format("YYYY-MM-DD")
+        client != null 
+        && client.state == 'Acreditado' 
+        // && client.nextCollect == moment().tz("America/Bogota").format("YYYY-MM-DD") -> DESCOMENTAR PARA PROD
       );
-      // activeCredits.forEach(credit => {
-      //   credit.feesToPay = 0;
-      //   // Valida que el credito es semanal
-      //   if (credit.numberFees >= 25) {
-      //     this._addCredit(true, credit, 0, null);
-      //   } else if (credit.numberFees < 25 && credit.paymentsForecast.length > 0) {
-      //     credit.paymentsForecast.forEach((payment, index) => {
-      //       // Valida que en el array de proyeccuión existan cuotas  pendientes que sean 
-      //       // iguales a la fecha actual
-      //       if (payment.date === moment().tz('America/Bogota').format('YYYY-MM-DD') && !payment.paid) {
-      //         this._addCredit(true, credit, payment.expectedAmount, index);
-      //       // En caso contrario, si tiene coutas pendiente, añade el credito al array 
-      //       // para que aparezca en los recaudos disponibles
-      //       } else if (moment(payment.date) < moment().tz('America/Bogota') && !payment.paid) {
-      //         this._addCredit(true, credit, payment.expectedAmount, index);
-      //       }
-      //     });
-      //   }
-      // });
-
       this.filteredClients = this.clients;
     });
 
@@ -193,11 +167,22 @@ export class CollectionsPage implements OnInit {
             Valor cuota: <b>$ ${this.credit[0].feesTotalAmount.toLocaleString('DE-de')}</b>
         `;
 
+        const input: Partial<AlertInput>[] = [
+          {
+            name  : 'inputFee',
+            type  : 'number',
+            label : 'Valor de la cuota',
+            placeholder: 'Ingrese el valor a pagar',
+            value : this.credit[0].feesTotalAmount,
+          }
+        ]
+
         this.utilsService.presentAlert(
           fullNameClient,
           idClient,
           messageAlert,
-          this._buttonActions(this.credit[0].feesTotalAmount)
+          this._buttonActions(this.credit[0].feesTotalAmount),
+          input,
         );
 
       } catch (error) {
@@ -225,27 +210,32 @@ export class CollectionsPage implements OnInit {
       // Boton de NO PAGO
       {
         text: 'No paga',
-        handler: () => {
-          this._submitAlert(false, feesTotalAmount);
+        handler: (feeValueInput) => {
+          const { inputFee } = feeValueInput;
+          this._submitAlert(false, feesTotalAmount, parseInt(inputFee));
         }
       },
       // Boton PAGO
       {
         text: 'Paga',
-        handler: () => {
-          this._submitAlert(true, feesTotalAmount);
+        handler: (feeValueInput) => {
+          const { inputFee } = feeValueInput;
+          this._submitAlert(true, feesTotalAmount, parseInt(inputFee));
         }
       }
 
     ]
   }
 
-  private _submitAlert(paidFee: boolean, feesTotalAmount): void {
+  private _submitAlert(paidFee: boolean, feesTotalAmount: number, feePartialValue: number): void {
+    
+    if(!feePartialValue || feePartialValue === 0) { return; }
+
     this.utilsService.presentAlert(
       'Advertencia',
       '¿Está seguro de realizar esta acción?',
       `Registrar ${paidFee
-        ? `pago de la cuota de ${this.fullNameClient} por $ ${feesTotalAmount.toLocaleString('DE-de')}`
+        ? `pago de la cuota de ${this.fullNameClient} por $ ${ feePartialValue.toLocaleString('DE-de')  }`
         : `no pago de la cuota de ${this.fullNameClient}`} `,
       [
         {
@@ -256,7 +246,7 @@ export class CollectionsPage implements OnInit {
         {
           text: 'Aceptar',
           handler: () => {
-            this._saveCollect(paidFee);
+            this._saveCollect(paidFee, feePartialValue);
           }
         }
       ]
@@ -268,25 +258,35 @@ export class CollectionsPage implements OnInit {
    * Guarda el pago realizado en la base de datos
    * @param paidFee Paga/No paga
    */
-  private async _saveCollect(paidFee: boolean): Promise<void> {
+  private async _saveCollect(paidFee: boolean, feePartialValue: number): Promise<void> {
 
     const loader = await this.utilsService.presentLoader('Registrando recaudo...');
     loader.present();
 
     try {
 
+      // Proxima fecha de pago
+      const nextCollect     = moment().tz("America/Bogota").add(this.credit[0].collectFrecuency, 'days').format("YYYY-MM-DD");
+
       if (paidFee) { // Valida que la cuota fue pagada
 
+        // Valores de las cuotas parciales
+        const feesPaid        = this.credit[0].feesPaid + parseFloat((feePartialValue / this.credit[0].feesTotalAmount).toFixed(3));
+        const balance         = this.credit[0].balance - feePartialValue;
+        const outstandingFees = this.credit[0].outstandingFees - feesPaid;
+        
+
         let data: Credit = {
-          feesPaid: this.credit[0].feesPaid + this.credit[0].feesToPay,
-          outstandingFees: this.credit[0].outstandingFees - this.credit[0].feesToPay,
-          balance: this.credit[0].balance - this.credit[0].feesTotalAmount,
-          paymentsForecast: this.credit[0].paymentsForecast,
+          feesPaid: feesPaid,
+          outstandingFees: outstandingFees,
+          balance,
+          paymentsForecast: [],
+          nextCollect,
           state: null
         }
 
         // Valida que el credito fue pagado
-        if (data.balance == 0) {
+        if (data.balance <= 0) {
           data.state = 'Pagado'
         } else {
           data.state = 'Acreditado'
@@ -295,7 +295,27 @@ export class CollectionsPage implements OnInit {
         await this.creditsService.updateCredit(this.credit[0].id, data);
       } else {
 
-        await this.creditsService.updateCredit(this.credit[0].id, { feesNotPaid: this.credit[0].feesNotPaid + this.credit[0].feesToPay });
+        const data: Credit = { 
+          nextCollect,
+          feesNotPaid: this.credit[0].feesNotPaid + 1
+        };
+
+        // Valida la frecuencia del credito (Diaria - Semanal)
+        if( this.credit[0].collectFrecuency == 1 ) {
+          data.outstandingFees = this.__calculateOutstandingFees( data.feesNotPaid, this.credit[0].outstandingFees, 'daily' );
+          // Calcula el saldo con respecto a las cuotas pendiantes
+          data.balance  = data.outstandingFees * this.credit[0].feesTotalAmount;
+        } else if (this.credit[0].collectFrecuency == 7) {
+          data.outstandingFees = this.__calculateOutstandingFees( data.feesNotPaid, this.credit[0].outstandingFees, 'weekly' );
+          data.balance  = this.credit[0].balance + parseInt((this.credit[0].feesTotalAmount / 7).toFixed(0));
+        } else {
+          data.outstandingFees = this.__calculateOutstandingFees( data.feesNotPaid, this.credit[0].outstandingFees, 'other' );
+          data.balance  = data.outstandingFees * this.credit[0].feesTotalAmount;
+        }
+
+
+
+        await this.creditsService.updateCredit(this.credit[0].id, data);
         await this.clientsService.updateClient({ billingState: 'Atrasado' }, (this.idClient));
 
       }
@@ -304,7 +324,7 @@ export class CollectionsPage implements OnInit {
         id: `${moment().format("YYYYMMDDHHmmss")}-${this.credit[0].id}`,
         createdAt: moment().tz('America/Bogota').format(),
         paid: paidFee,
-        amountPaid: this.credit[0].feesTotalAmount,
+        amountPaid: feePartialValue,
         uid: this.userData.id,
         username: this.userData.name,
         idClient: this.idClient,
@@ -334,6 +354,28 @@ export class CollectionsPage implements OnInit {
       loader.dismiss();
     }
 
+  }
+
+  /**
+   * Calcula las cuotas pendientes segun la logica de negocio
+   * @param feesNotPaid 
+   * @param outstandingFees 
+   * @param frecuency 
+   */
+  private __calculateOutstandingFees( feesNotPaid: number, outstandingFees: number, frecuency: string ): number {
+    switch (frecuency) {
+      case 'daily':
+        if( feesNotPaid % 4 === 0 ) {
+          return outstandingFees + 1;
+        } else {
+          return outstandingFees;
+        }
+      case 'weekly':
+          return outstandingFees + 0.142;
+        
+      default:
+        return outstandingFees;
+    }
   }
 
 }

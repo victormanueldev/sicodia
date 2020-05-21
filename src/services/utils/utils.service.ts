@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { LoadingController, AlertController, ToastController } from '@ionic/angular';
-import { AlertButton } from '@ionic/core';
+import { AlertButton, AlertInput } from '@ionic/core';
 
 @Injectable({
   providedIn: 'root'
@@ -18,14 +18,16 @@ export class UtilsService {
    * @param header 
    * @param subHeader 
    * @param message 
+   * @param inputs
    * @param buttons 
    * @param cssClass 
    */
-  async presentAlert(header: string, subHeader: string, message: string, buttons: Array<AlertButton>, cssClass?: string): Promise<void> {
+  async presentAlert(header: string, subHeader: string, message: string, buttons: Array<AlertButton>, inputs?: Array<Partial<AlertInput>>, cssClass?: string): Promise<void> {
     const alert = await this.alertCtrl.create({
       header,
       subHeader,
       message,
+      inputs,
       buttons,
       cssClass
     });

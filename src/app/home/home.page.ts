@@ -11,6 +11,7 @@ import * as moment from 'moment-timezone';
 import { Chart } from 'chart.js';
 import { ModalController } from '@ionic/angular';
 import { ModalCollectDetails } from './modal-collect-detail/modal-collect-details';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-home',
@@ -39,6 +40,7 @@ export class HomePage implements OnInit {
   totalPay: number = 0;
   collectsTrue: number = 0;
   paymentsForecast: PaymentForecast[] = [];
+
 
   constructor(
     private fcmService: FcmService,
@@ -124,7 +126,7 @@ export class HomePage implements OnInit {
 
     // Obtiene todos los creditos activos y calcula el monto total de 
     // Cuotas que se espera que los cobradores recauden
-    this.creditsService.getActiveCredits(this.idCompany).subscribe(res => {
+   this.creditsService.getActiveCredits(this.idCompany).subscribe(res => {
       this.activeCredits = res.filter(credit => credit != null);
       this._calculateTotalExpected();
     });

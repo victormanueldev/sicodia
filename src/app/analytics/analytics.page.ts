@@ -4,6 +4,7 @@ import { UtilsService } from 'src/services/utils/utils.service';
 import { CreditsService } from 'src/services/credits/credits.service';
 import { Credit } from 'src/models/credit.model';
 import { CollectionsService } from 'src/services/collections/collections.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-analytics',
@@ -21,6 +22,9 @@ export class AnalyticsPage implements OnInit {
   totalAcredited: number = 0;
   totalProfit: number = 0;
   totalCollectProfit: number = 0;
+
+  // Subscriptions
+  collectsSubs: Subscription = new Subscription();
 
   constructor(
     private utils: UtilsService,
@@ -83,7 +87,7 @@ export class AnalyticsPage implements OnInit {
           }
         })
 
-        this.collectsService.getCollections(this.idCompany).subscribe(res => {
+        this.collectsSubs = this.collectsService.getCollections(this.idCompany).subscribe(res => {
           let collections = res.filter(res => res != null);
 
           collections.forEach(collect => {
@@ -104,6 +108,10 @@ export class AnalyticsPage implements OnInit {
     this.initialDate = moment().tz('America/Bogota').subtract(1, 'month').format();
     this.finalDate = moment().tz('America/Bogota').format();
     this.dateChange();
+  }
+
+  ionViewDidLeave() {
+    this.collectsSubs.unsubscribe();
   }
 
 }
